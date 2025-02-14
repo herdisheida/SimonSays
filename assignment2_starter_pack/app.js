@@ -21,11 +21,7 @@ const resetGame = () => {
 // reset Game: starts in lvl1
 // TODO: game starts in idle state - cannot press anything until, user presses START
     let scoreLevel = 0;
-    let selectedCards = [];
 
-
-
-    // disable all buttons, except the start-btn
     resetButton.addEventListener("click", () => {
         disableButtons();
     })
@@ -33,24 +29,36 @@ const resetGame = () => {
     console.log("Game reset to idle state")
     }
 
+
+
+// disable all buttons, except the start-btn
 const disableButtons = () => {
     const allButtons = document.querySelectorAll("button");
     allButtons.forEach(button => {
         if (button.id != "start-btn")
             button.disabled = true;
         })
+    
+    // disable keyboard
+    document.onkeydown = (e) => {
+        return false;
+    }
 }
 
-// const enablenButtons
+// enable all game-activity, except start-button
 const enableButtons = () => {
     const allButtons = document.querySelectorAll("button");
     allButtons.forEach(button => {
         button.disabled = false;
     })
+    // enable keyboard
+    document.onkeydown = (e) => {
+        return true;
+    }
 }
 
 
-// WHEN START BUTTON IS PRESSED
+// user presses start-btn
 const startGame = () => {
     console.log("Game has started")
 
@@ -70,7 +78,6 @@ const startGame = () => {
 }
 
 
-disableButtons(); // DELTETE
 
 
 // user starts the game
@@ -84,9 +91,12 @@ document.getElementById("game-board").addEventListener("click", (e) => {
     console.log("Pad was pressed")
     pressPad(e.target.id);
 });
-// document.addEventListener("keydown", (e) => {
 
-// });
+document.getElementById("game-board").addEventListener("keydown", (e) => {
+    console.log("Pad was pressed using KEY")
+    pressPad(e.target.id); 
+});
+
 
 // user presses replay button -- sequence is repeated
 document.getElementById("replay-btn").addEventListener("click", (e) => {
@@ -159,3 +169,17 @@ const getHighScore = () => {
 const replaySequence = () => {
     // replay the sequence
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+disableButtons(); // TODO: add this --- so that each time page loads, it calls resetGame instead of disabledButtons()
