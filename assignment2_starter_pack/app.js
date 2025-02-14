@@ -8,7 +8,7 @@ const padKeys = {
     q: "pad-red",
     w: "pad-yellow",
     a: "pad-green",
-    s: "pad-blue"
+    s: "pad-blue",
 };
 
 
@@ -23,7 +23,7 @@ const resetGame = () => {
     resetButton.addEventListener("click", () => { // TODO: CHANGE THIS THING
         disableButtons();
     })
-    console.log("Game reset to idle state")
+    console.log("Game reset to idle state");
     }
 
 
@@ -31,7 +31,7 @@ const resetGame = () => {
 const disableButtons = () => {
     const allButtons = document.querySelectorAll("button");
     allButtons.forEach(button => {
-        if (button.id != "start-btn")
+        if (button.id != "start-btn");
             button.disabled = true;
         })
     // disable keyboard
@@ -74,6 +74,48 @@ const startGame = () => {
 // • The tone style that is played must be the one that is selected in the dropdown menu.
 // • The player must repeat the sequence by clicking the game-pads or using the keyboard (Q, W, A, S ).
 }
+
+const getRandomPad = () => {
+    // get values from object
+    const padValues = Object.values(padKeys);
+    // randomize index
+    let i = Math.floor(Math.random() * padValues.length);
+    // get and return a random pad from the index
+    let randomPad = padValues[i];
+    return randomPad;
+}
+
+
+// pad press function
+const pressPad = (pad) => {
+    console.log(pad + " was pressed");
+    // make sound
+    // save pressPad --- compare it with padSequences
+    //We initialise the synthesiser
+    playTune();
+    checkMatch(); // check if pad sequence was correct
+
+}
+
+disableButtons(); // TODO: add this --- so that each time page loads, it calls resetGame instead of disabledButtons()
+
+
+const playTune = () => {
+    let sound = document.getElementById("sound-select")
+    // PLAY SOMETHING
+}
+
+
+let padSequence = []
+const checkMatch = () => {
+    // check if userInput matches padSequence
+
+
+    // if it matches: continue with game (get another color to the sequence)
+    
+    // if it doesn't match: make failure msg appear + restart button
+}
+
 
 
 
@@ -154,26 +196,6 @@ document.getElementById("reset-btn").addEventListener("click", (e) => {
 
 
 
-const getRandomPad = () => {
-    // get values from object
-    const padValues = Object.values(padKeys)
-    // randomize index
-    let i = Math.floor(Math.random() * padValues.length)
-    // get and return a random pad from the index
-    let randomPad = padValues[i]
-    return randomPad
-}
-
-
-// pad press function
-const pressPad = (pad) => {
-    console.log(pad + " was pressed")
-    // make sound
-    // save pressPad --- compare it with padSequences
-
-
-}
-
 
 
 
@@ -224,5 +246,3 @@ const replaySequence = () => {
 
 
 
-
-disableButtons(); // TODO: add this --- so that each time page loads, it calls resetGame instead of disabledButtons()
