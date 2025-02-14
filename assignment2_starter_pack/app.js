@@ -8,7 +8,7 @@ const padKeys = {
     q: "pad-red",
     w: "pad-yellow",
     a: "pad-green",
-    s: "pad-blue",
+    s: "pad-blue"
 };
 
 
@@ -29,11 +29,13 @@ const resetGame = () => {
 
 // disable all buttons, except the start-btn
 const disableButtons = () => {
-    const allButtons = document.querySelectorAll("button");
+    const allButtons = document.querySelectorAll("button")
+    console.log(allButtons) // DELETE
     allButtons.forEach(button => {
-        if (button.id != "start-btn");
-            button.disabled = true;
-        })
+        if (button.id != "start-btn")
+            console.log(button.id) // DELETE
+            button.disabled = true
+        });
     // disable keyboard
     document.onkeydown = () => {
         return false;
@@ -42,13 +44,13 @@ const disableButtons = () => {
 
 // enable all game-activity, except start-button
 const enableButtons = () => {
-    const allButtons = document.querySelectorAll("button");
+    const allButtons = document.querySelectorAll("button")
     allButtons.forEach(button => {
-        button.disabled = false;
+        button.disabled = false
     })
     // enable keyboard
     document.onkeydown = () => {
-        return true;
+        return true
     }
 
 }
@@ -64,7 +66,7 @@ const startGame = () => {
     // enable buttons
     enableButtons();
     // disable start button
-    const startBtn = document.getElementById("start-btn");
+    const startBtn = document.getElementById("start-btn")
     startBtn.disabled = true;
 
     document.getElementById("pad-red").focus() // TODO: FIX THIS UGLY THING -- it works but ugly
@@ -92,12 +94,11 @@ const pressPad = (pad) => {
     // make sound
     // save pressPad --- compare it with padSequences
     //We initialise the synthesiser
-    playTune();
-    checkMatch(); // check if pad sequence was correct
+    // playTune();
+    // checkMatch(); // check if pad sequence was correct
 
 }
 
-disableButtons(); // TODO: add this --- so that each time page loads, it calls resetGame instead of disabledButtons()
 
 
 const playTune = () => {
@@ -105,14 +106,10 @@ const playTune = () => {
     // PLAY SOMETHING
 }
 
-
 let padSequence = []
 const checkMatch = () => {
     // check if userInput matches padSequence
-
-
     // if it matches: continue with game (get another color to the sequence)
-    
     // if it doesn't match: make failure msg appear + restart button
 }
 
@@ -128,7 +125,7 @@ document.getElementById("start-btn").addEventListener("click", (e) => {
 
 // user presses a pad
 document.getElementById("game-board").addEventListener("click", (e) => {
-    console.log("Pad was pressed");
+    console.log("Pad was pressed")
     pressPad(e.target.id);
 });
 
@@ -236,13 +233,6 @@ const replaySequence = () => {
 };
 
 
-
-
-
-
-
-
-
-
+disableButtons(); // TODO: add this --- so that each time page loads, it calls resetGame instead of disabledButtons()
 
 
