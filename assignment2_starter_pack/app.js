@@ -18,17 +18,13 @@ const padKeys = {
 // WHEN PAGE IS LOADED
 
 const resetGame = () => {
-// reset Game: starts in lvl1
-// TODO: game starts in idle state - cannot press anything until, user presses START
-    let level = 0;
+    let level = 1; // starts at lvl 1
 
-    resetButton.addEventListener("click", () => {
+    resetButton.addEventListener("click", () => { // TODO: CHANGE THIS THING
         disableButtons();
     })
-
     console.log("Game reset to idle state")
     }
-
 
 
 // disable all buttons, except the start-btn
@@ -38,7 +34,6 @@ const disableButtons = () => {
         if (button.id != "start-btn")
             button.disabled = true;
         })
-    
     // disable keyboard
     document.onkeydown = () => {
         return false;
@@ -55,6 +50,7 @@ const enableButtons = () => {
     document.onkeydown = () => {
         return true;
     }
+
 }
 
 
@@ -71,8 +67,7 @@ const startGame = () => {
     const startBtn = document.getElementById("start-btn");
     startBtn.disabled = true;
 
-    document.getElementById("pad-red").focus() // TODO: FIX THIS UGLY THING
-
+    document.getElementById("pad-red").focus() // TODO: FIX THIS UGLY THING -- it works but ugly
 
 
 // • The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
@@ -95,21 +90,46 @@ document.getElementById("game-board").addEventListener("click", (e) => {
     pressPad(e.target.id);
 });
 
+
+
+
+// Track cooldowns for each pad
+const cooldownPads = new Set(); // Stores IDs of pads in cooldown
 // user presses a pad using a KEY - on the click
-document.getElementById("game-board").addEventListener("keydown", (e) => {    
+document.getElementById("game-board").addEventListener("keydown", (e) => {
     const padId = padKeys [e.key];
     if (padId) {
         const pad = document.getElementById(padId);
-        pad.classList.add("active");
-        pressPad(e.target.id); 
+        pad.focus() // make sure, the key is pressed
+
+
+        // prevent pads from being spammed, by having a 1 second cooldown after each press
+        // TODO: MIGHT DELETE
+        if (cooldownPads.has(padId)) {
+            e.preventDefault(); // Optional: Block the action
+            console.log("Pad is in cooldown!");
+            return;
+        }
+        cooldownPads.add(padId);
+        pad.classList.add("cooldown");
+        setTimeout(() => {
+            cooldownPads.delete(padId);
+            pad.classList.remove("cooldown");
+        }, 300); // 300ms = 5s
+
+
+        // functionality of the button
+        pad.classList.add("clickKey");
+        pressPad(pad.id);
+        console.log(e.key, "KEY WAS PRESSED")
     };
 });
 // user releases a pad using a KEY
-document.getElementById("game-board").addEventListener("keydown", (e) => {    
+document.getElementById("game-board").addEventListener("keyup", (e) => {
     const padId = padKeys [e.key]
     if (padId) {
         const pad = document.getElementById(padId);
-        pad.classList.remove("active");
+        pad.classList.remove("clickKey");
     };
 });
 
@@ -148,26 +168,11 @@ const getRandomPad = () => {
 // pad press function
 const pressPad = (pad) => {
     console.log(pad + " was pressed")
-    // scale pad
-    // change color
     // make sound
     // save pressPad --- compare it with padSequences
 
 
-    // let element = document.getElementById(pad).addEventListener("keydown", (e) => {
-    //     element.classList.add("active")
-    // });
-    // }
-
-    // Object.assign(element.style, {
-    //     scale: "white",
-    //     backgroundColor: "black",
-    //     fontSize: "10px"
-    // });
 }
-
-
-
 
 
 
