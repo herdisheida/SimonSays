@@ -1,32 +1,143 @@
+// window.localstorage ----- til að geyma high score
+
+
+
+
+// give each pad a unique keyboard key
+var padKeys = {
+    q: "pad-red",
+    w: "pad-yellow",
+    a: "pad-green",
+    s: "pad-blue"
+};
+
 
 
 
 
 // WHEN PAGE IS LOADED
+
 const resetGame = () => {
 // reset Game: starts in lvl1
 // TODO: game starts in idle state - cannot press anything until, user presses START
     let scoreLevel = 0;
     let selectedCards = [];
-};
 
+
+
+    // disable all buttons, except the start-btn
+    resetButton.addEventListener("click", () => {
+        disableButtons();
+    })
+
+    console.log("Game reset to idle state")
+    }
+
+const disableButtons = () => {
+    const allButtons = document.querySelectorAll("button");
+    allButtons.forEach(button => {
+        if (button.id != "start-btn")
+            button.disabled = true;
+        })
+}
+
+// const enablenButtons
+const enableButtons = () => {
+    const allButtons = document.querySelectorAll("button");
+    allButtons.forEach(button => {
+        button.disabled = false;
+    })
+}
 
 
 // WHEN START BUTTON IS PRESSED
 const startGame = () => {
+    console.log("Game has started")
+
     // start Game
+    // able to press everything -- (replau button, no longer disabled)
+
+    // enable buttons
+    enableButtons();
+    // disable start button
+    const startBtn = document.getElementById("start-btn");
+    startBtn.disabled = true;
+
 
 // • The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
 // • The tone style that is played must be the one that is selected in the dropdown menu.
 // • The player must repeat the sequence by clicking the game-pads or using the keyboard (Q, W, A, S ).
+}
+
+
+disableButtons(); // DELTETE
+
+
+// user starts the game
+document.getElementById("start-btn").addEventListener("click", (e) => {
+    console.log("Start button was pressed")
+    startGame(e)
+});
+
+// user presses a pad
+document.getElementById("game-board").addEventListener("click", (e) => {
+    console.log("Pad was pressed")
+    pressPad(e.target.id);
+});
+// document.addEventListener("keydown", (e) => {
+
+// });
+
+// user presses replay button -- sequence is repeated
+document.getElementById("replay-btn").addEventListener("click", (e) => {
+    console.log("Replay button was pressed")
+    replaySequence(e);
+});
+
+
+document.getElementById("reset-btn").addEventListener("click", (e) => {
+    console.log("Reset button was pressed")
+    resetGame(e)
+});
+
+
+// user changes pad-press-sound
+// document.getElementById('my_drop_down').selectedIndex=2;
+
+
+
+
+
+
+
+// pad press function
+const pressPad = (pad) => {
+    console.log(pad + " was pressed")
+    // scale pad
+    // change color
+    // make sound
+    // save pressPad --- compare it with padSequences
 };
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
 const playRandomColorSequence = () => {
     // play color sequence
 };
-
 
 const validateUserInput = () => {
     // check if user input is == to the sequence
