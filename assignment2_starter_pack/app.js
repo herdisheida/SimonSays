@@ -2,55 +2,49 @@
 
 
 
-
+// WHEN PAGE IS LOADED
 const resetGame = () => {
-// reset Game
-    score = 0;
-    selectedCards = [];
+// reset Game: starts in lvl1
+// TODO: game starts in idle state - cannot press anything until, user presses START
+    let scoreLevel = 0;
+    let selectedCards = [];
 };
 
-const randomColorSequence = () => {
-    // randomize color sequence
-}
+
+
+// WHEN START BUTTON IS PRESSED
+const startGame = () => {
+    // start Game
+
+// • The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
+// • The tone style that is played must be the one that is selected in the dropdown menu.
+// • The player must repeat the sequence by clicking the game-pads or using the keyboard (Q, W, A, S ).
+};
 
 
 
-const pressColorPads = (event) => {
-    console.log("A color pad was pressed!");
-    document.pad.active = true;
-
-}
-
-// Get all buttons with the class "colorButton"
-const colorPads = document.querySelectorAll('.pad');
-
-// Add an event listener to each button
-colorPads.forEach(button => {
-    button.addEventListener('click', pressColorPads);
-});
+const playRandomColorSequence = () => {
+    // play color sequence
+};
 
 
+const validateUserInput = () => {
+    // check if user input is == to the sequence
+    // • If the input is correct, the game progresses with an extended sequence.
+    // • If the input is incorrect, a failure message (modal) appears, allowing the player to start a new game.
+};
 
-//     if (selectedCards.length < 2 && !card.classList.contains("matched")) {
-//       selectedCards.push(card);
-//     }
-//     if (selectedCards.length === 2) {
-//       setTimeout(checkMatch, 500);
-//     }
-//   };
-  
-//   const checkMatch = () => {
-//     const [card1, card2] = selectedCards;
-//     if (card1.dataset.emoji === card2.dataset.emoji) {
-//       card1.classList.add("matched");
-//       card2.classList.add("matched");
-//       matchedPairs++;
-//       if (matchedPairs === emojis.length / 2) {
-//         setTimeout(() => alert("You win!"), 300);
-//       }
-//     } else {
-//       card1.innerText = "❓";
-//       card2.innerText = "❓";
-//     }
-//     selectedCards = [];
-//   };
+
+const showFailureMessage = () => {
+    // showed when user input is incorrect
+};
+
+
+const getHighScore = () => {
+    // get high score
+    // • If the player achieves a new high score, it updates dynamically on the screen.
+};
+
+const replaySequence = () => {
+    // replay the sequence
+};
