@@ -1,2 +1,0 @@
-# VEFFORITUN
-simon says project
