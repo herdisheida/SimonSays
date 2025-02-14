@@ -20,9 +20,7 @@ const padKeys = {
 const resetGame = () => {
     let level = 1; // starts at lvl 1
 
-    resetButton.addEventListener("click", () => { // TODO: CHANGE THIS THING
-        disableButtons();
-    })
+    disableButtons();
     console.log("Game reset to idle state");
     }
 
@@ -32,13 +30,14 @@ const disableButtons = () => {
     const allButtons = document.querySelectorAll("button")
     console.log(allButtons) // DELETE
     allButtons.forEach(button => {
-        if (button.id != "start-btn")
+        if (button.id != "start-btn") {
             console.log(button.id) // DELETE
-            button.disabled = true
-        });
+            button.disabled = true;
+            }
+        })
     // disable keyboard
     document.onkeydown = () => {
-        return false;
+        return false
     }
 }
 
@@ -46,11 +45,11 @@ const disableButtons = () => {
 const enableButtons = () => {
     const allButtons = document.querySelectorAll("button")
     allButtons.forEach(button => {
-        button.disabled = false
+        button.disabled = false;
     })
     // enable keyboard
     document.onkeydown = () => {
-        return true
+        return true;
     }
 
 }
@@ -233,6 +232,5 @@ const replaySequence = () => {
 };
 
 
-disableButtons(); // TODO: add this --- so that each time page loads, it calls resetGame instead of disabledButtons()
 
-
+Object.onload = resetGame() // TODO: so that each time page loads, it calls resetGame instead of disabledButtons()
