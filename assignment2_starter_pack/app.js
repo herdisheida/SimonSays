@@ -4,7 +4,7 @@
 
 
 // give each pad a unique keyboard key
-var padKeys = {
+const padKeys = {
     q: "pad-red",
     w: "pad-yellow",
     a: "pad-green",
@@ -40,7 +40,7 @@ const disableButtons = () => {
         })
     
     // disable keyboard
-    document.onkeydown = (e) => {
+    document.onkeydown = () => {
         return false;
     }
 }
@@ -52,7 +52,7 @@ const enableButtons = () => {
         button.disabled = false;
     })
     // enable keyboard
-    document.onkeydown = (e) => {
+    document.onkeydown = () => {
         return true;
     }
 }
@@ -70,6 +70,9 @@ const startGame = () => {
     // disable start button
     const startBtn = document.getElementById("start-btn");
     startBtn.disabled = true;
+
+    document.getElementById("pad-red").focus() // TODO: FIX THIS UGLY THING
+
 
 
 // • The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
@@ -92,9 +95,12 @@ document.getElementById("game-board").addEventListener("click", (e) => {
     pressPad(e.target.id);
 });
 
-document.getElementById("game-board").addEventListener("keydown", (e) => {
-    console.log("Pad was pressed using KEY")
-    pressPad(e.target.id); 
+document.getElementById("game-board").addEventListener("keydown", (e) => {    
+    const padId = padKeys [e.key]
+    if (padId) {
+        console.log("Pad was pressed using key: ", padId)
+        pressPad(e.target.id); 
+    };
 });
 
 
