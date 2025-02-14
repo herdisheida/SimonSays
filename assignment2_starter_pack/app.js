@@ -83,7 +83,7 @@ const startGame = () => {
 
 
 
-// user starts the game
+// user presses the start button
 document.getElementById("start-btn").addEventListener("click", (e) => {
     console.log("Start button was pressed")
     startGame(e)
@@ -94,7 +94,7 @@ document.getElementById("game-board").addEventListener("click", (e) => {
     console.log("Pad was pressed")
     pressPad(e.target.id);
 });
-
+// user presses a pad using a KEY
 document.getElementById("game-board").addEventListener("keydown", (e) => {    
     const padId = padKeys [e.key]
     if (padId) {
@@ -103,14 +103,13 @@ document.getElementById("game-board").addEventListener("keydown", (e) => {
     };
 });
 
-
-// user presses replay button -- sequence is repeated
+// user presses the replay button (a sequence is repeated)
 document.getElementById("replay-btn").addEventListener("click", (e) => {
     console.log("Replay button was pressed")
     replaySequence(e);
 });
 
-
+// user presses the reset button
 document.getElementById("reset-btn").addEventListener("click", (e) => {
     console.log("Reset button was pressed")
     resetGame(e)
@@ -124,6 +123,15 @@ document.getElementById("reset-btn").addEventListener("click", (e) => {
 
 
 
+const getRandomPad = () => {
+    // get values from object
+    const padValues = Object.values(padKeys)
+    // randomize index
+    let i = Math.floor(Math.random() * padValues.length)
+    // get and return a random pad from the index
+    let randomPad = padValues[i]
+    return randomPad
+}
 
 
 // pad press function
@@ -133,7 +141,20 @@ const pressPad = (pad) => {
     // change color
     // make sound
     // save pressPad --- compare it with padSequences
-};
+
+
+    // let element = document.getElementById(pad).addEventListener("keydown", (e) => {
+    //     element.classList.add("active")
+    // });
+    // }
+
+    // Object.assign(element.style, {
+    //     scale: "white",
+    //     backgroundColor: "black",
+    //     fontSize: "10px"
+    // });
+}
+
 
 
 
