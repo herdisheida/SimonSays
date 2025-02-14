@@ -20,7 +20,7 @@ const padKeys = {
 const resetGame = () => {
 // reset Game: starts in lvl1
 // TODO: game starts in idle state - cannot press anything until, user presses START
-    let scoreLevel = 0;
+    let level = 0;
 
     resetButton.addEventListener("click", () => {
         disableButtons();
@@ -91,28 +91,39 @@ document.getElementById("start-btn").addEventListener("click", (e) => {
 
 // user presses a pad
 document.getElementById("game-board").addEventListener("click", (e) => {
-    console.log("Pad was pressed")
+    console.log("Pad was pressed");
     pressPad(e.target.id);
 });
-// user presses a pad using a KEY
+
+// user presses a pad using a KEY - on the click
 document.getElementById("game-board").addEventListener("keydown", (e) => {    
-    const padId = padKeys [e.key]
+    const padId = padKeys [e.key];
     if (padId) {
-        console.log("Pad was pressed using key: ", padId)
+        const pad = document.getElementById(padId);
+        pad.classList.add("active");
         pressPad(e.target.id); 
     };
 });
+// user releases a pad using a KEY
+document.getElementById("game-board").addEventListener("keydown", (e) => {    
+    const padId = padKeys [e.key]
+    if (padId) {
+        const pad = document.getElementById(padId);
+        pad.classList.remove("active");
+    };
+});
+
 
 // user presses the replay button (a sequence is repeated)
 document.getElementById("replay-btn").addEventListener("click", (e) => {
-    console.log("Replay button was pressed")
+    console.log("Replay button was pressed");
     replaySequence(e);
 });
 
 // user presses the reset button
 document.getElementById("reset-btn").addEventListener("click", (e) => {
-    console.log("Reset button was pressed")
-    resetGame(e)
+    console.log("Reset button was pressed");
+    resetGame(e);
 });
 
 
