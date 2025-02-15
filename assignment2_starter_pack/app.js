@@ -18,63 +18,44 @@ const padKeys = {
 // WHEN PAGE IS LOADED
 
 const resetGame = () => {
-    let level = 1; // starts at lvl 1
+    let level = 1; // TODO: starts at lvl 1
 
+    // disable all buttons except the start-btn
     disableButtons();
-    console.log("Game reset to idle state");
-    }
-
-
-// disable all buttons, except the start-btn
-const disableButtons = () => {
-    const allButtons = document.querySelectorAll("button")
-    console.log(allButtons) // DELETE
-    allButtons.forEach(button => {
-        if (button.id != "start-btn") {
-            console.log(button.id) // DELETE
-            button.disabled = true;
-            }
-        })
-    // disable keyboard
-    document.onkeydown = () => {
-        return false
-    }
+    document.getElementById("start-btn").disabled = false;
+    console.log("Game reset to idle state"); // DELETE console
 }
 
-// enable all game-activity, except start-button
-const enableButtons = () => {
-    const allButtons = document.querySelectorAll("button")
-    allButtons.forEach(button => {
-        button.disabled = false;
-    })
-    // enable keyboard
-    document.onkeydown = () => {
-        return true;
-    }
-
-}
-
-
-// user presses start-btn
 const startGame = () => {
-    console.log("Game has started")
-
-    // start Game
-    // able to press everything -- (replau button, no longer disabled)
-
-    // enable buttons
+    // enable all buttons and disable the start-btn
     enableButtons();
-    // disable start button
-    const startBtn = document.getElementById("start-btn")
-    startBtn.disabled = true;
+    document.getElementById("start-btn").disabled = true;
 
+    // put focus on a pad, in order for keyboard to work simulatnioutsly
     document.getElementById("pad-red").focus() // TODO: FIX THIS UGLY THING -- it works but ugly
 
+    console.log("Game has started") // DELETE console
 
-// • The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
-// • The tone style that is played must be the one that is selected in the dropdown menu.
-// • The player must repeat the sequence by clicking the game-pads or using the keyboard (Q, W, A, S ).
+// TODO The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
+// TODO The tone style that is played must be the one that is selected in the dropdown menu.
 }
+
+const disableButtons = () => {
+    // disable all button elements
+    const allButtons = document.querySelectorAll("button");
+    allButtons.forEach(button => {button.disabled = true});
+    // disable keyboard
+    document.onkeydown = () => {return false};
+}
+const enableButtons = () => {
+    // enable all button elements
+    const allButtons = document.querySelectorAll("button");
+    allButtons.forEach(button => {button.disabled = false});
+    // enable keyboard
+    document.onkeydown = () => {return true};
+}
+
+
 
 const getRandomPad = () => {
     // get values from object
@@ -117,16 +98,16 @@ const checkMatch = () => {
 
 
 // user presses the start button
-document.getElementById("start-btn").addEventListener("click", (e) => {
-    console.log("Start button was pressed")
-    startGame(e)
-});
+// document.getElementById("start-btn").addEventListener("click", (e) => {
+//     console.log("Start button was pressed")
+//     startGame(e)
+// });
 
 // user presses a pad
-document.getElementById("game-board").addEventListener("click", (e) => {
-    console.log("Pad was pressed")
-    pressPad(e.target.id);
-});
+// document.getElementById("game-board").addEventListener("click", (e) => {
+//     console.log("Pad was pressed")
+//     pressPad(e.target.id);
+// });
 
 
 
@@ -232,5 +213,4 @@ const replaySequence = () => {
 };
 
 
-
-Object.onload = resetGame() // TODO: so that each time page loads, it calls resetGame instead of disabledButtons()
+resetGame() // TODO: so that each time page loads, it calls resetGame instead of disabledButtons()

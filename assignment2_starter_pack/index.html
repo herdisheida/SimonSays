@@ -18,14 +18,14 @@
         </select>
       </div>
       <div class="container" id="game-board">
-        <button class="pad" id="pad-red">Q</button>
-        <button class="pad" id="pad-yellow">W</button>
+        <button class="pad" id="pad-red" onmousedown="pressPad">Q</button>
+        <button class="pad" id="pad-yellow" onmousedown="pressPad">W</button>
         <div class="level-indicator" id="level-indicator">1</div>
-        <button class="pad" id="pad-green">A</button>
-        <button class="pad" id="pad-blue">S</button>
+        <button class="pad" id="pad-green" onmousedown="pressPad">A</button>
+        <button class="pad" id="pad-blue" onmousedown="pressPad">S</button>
       </div>
       <div class="container">
-        <button id="start-btn" class="control-btn">Start</button>
+        <button id="start-btn" class="control-btn" onclick="startGame()">Start</button>
         <button id="replay-btn" class="control-btn" disabled>Replay</button>
         <div class="info-container">
           <img
