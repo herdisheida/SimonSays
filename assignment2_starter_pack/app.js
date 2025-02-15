@@ -96,35 +96,32 @@ const checkMatch = (e) => {
 
 
 
-let onCooldown = false // cooldown for each pad
+let padOnCooldown = false // cooldown for each pad
 const keyPressPad = (e) => {
-    // const pad = document.getElementById(padId)
-
-    const padId = padKeys [e.key]; // find corresponding pad-id from key
-    // get pad if padId is valid
-    if (padId) {
-        const pad = document.getElementById(padId);
-        pad.focus();
-
+     // find corresponding pad-id from key
+    const padId = padKeys [e.key];
+    if (padId) { // if key has a corrisponding pad-id
         // prevent pad from being spammed (1 sec cooldown)
-        if (onCooldown) {
+        if (padOnCooldown) {
             e.preventDefault() // block the action
             console.log("pad is on cooldown"); // DELETE console
             return;
 
         } else {
             // when key is pressed
-            onCooldown = true;
+            const pad = document.getElementById(padId);
+            pad.focus();
+            padOnCooldown = true;
             pad.classList.add("cooldown"); // DELETE might
             pad.classList.add("clickKey"); // enables pad:active
             pressPad(padId);
             
             // stop cooldown
             setTimeout(() => {
-                onCooldown = false;
+                padOnCooldown = false;
                 pad.classList.remove("cooldown"); // DELETE might
                 pad.classList.remove("clickKey"); // disables pad:active
-            }, 380); // delayd by 380ms
+            }, 230); // delayd by 230ms
         };
     };
 }
