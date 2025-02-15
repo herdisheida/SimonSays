@@ -15,6 +15,10 @@ let level = 1; // TODO: starts at lvl 1
 let padSeqIndex = 0
 
 
+// const synth = new Tone.Synth().toDestination(); // TEST
+
+
+
 
 
 
@@ -67,16 +71,24 @@ const pressPad = (padId) => {
     // make sound
     // save pressPad --- compare it with padSequences
     // We initialise the synthesiser
-    // playTune();
-    padSeqIndex += 1
+    playNote();
+    padSeqIndex += 1;
 
     checkMatch(padId); // check if pad press was correct
     addToSequence() // add if necesary
 }
 
-const playTune = (e) => {
-    let sound = document.getElementById("sound-select")
-    // PLAY SOMETHING
+const playNote = () => {
+    // get the select elements
+    const sounds = document.getElementById("sound-select");
+    // get the selected sound
+    const selectedSound = sounds.value; // "sine" |"square" | "triangle"
+
+
+    // PLAY THE SOUND
+    // const now = Tone.now(); // get time
+    // synth.triggerAttackRelease("c4", "8n", now); // play note
+
 }
 
 
@@ -116,22 +128,22 @@ const getRandomPad = () => {
 
 
 
-const animatePadPress = (padId) => {
-        const pad = document.getElementById(padId);
-        pad.classList.add("clickKey"); // enables pad:active
-        setTimeout(() => {
-            pad.classList.remove("clickKey"); // disables pad:active
-        }, 190); // delayd by 190ms
-}
 
 const keyPressPad = (e) => {
      // find corresponding pad-id from key
     const padId = padKeys [e.key];
     if (padId) { // if valid key is pressed
         const pad = document.getElementById(padId);
-        animatePadPress(padId)
+        animatePadPress(padId);
         pressPad(padId);
     };
+}
+const animatePadPress = (padId) => {
+    const pad = document.getElementById(padId);
+    pad.classList.add("clickKey"); // enables pad:active
+    setTimeout(() => {
+        pad.classList.remove("clickKey"); // disables pad:active
+    }, 190); // animate press for 190ms
 }
 
 

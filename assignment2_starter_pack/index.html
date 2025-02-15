@@ -18,11 +18,11 @@
         </select>
       </div>
       <div class="container" id="game-board">
-        <button class="pad" id="pad-red" onmousedown="pressPad(id)" onkeydown="keyPressPad(event)">Q</button>
-        <button class="pad" id="pad-yellow" onmousedown="pressPad(id)" onkeydown="keyPressPad(event)">W</button>
+        <button class="pad" id="pad-red" onmousedown="pressPad(id)" onkeyup="keyPressPad(event)">Q</button>
+        <button class="pad" id="pad-yellow" onmousedown="pressPad(id)" onkeyup="keyPressPad(event)">W</button>
         <div class="level-indicator" id="level-indicator">1</div>
-        <button class="pad" id="pad-green" onmousedown="pressPad(id)" onkeydown="keyPressPad(event)">A</button>
-        <button class="pad" id="pad-blue" onmousedown="pressPad(id)" onkeydown="keyPressPad(event)">S</button>
+        <button class="pad" id="pad-green" onmousedown="pressPad(id)" onkeyup="keyPressPad(event)">A</button>
+        <button class="pad" id="pad-blue" onmousedown="pressPad(id)" onkeyup="keyPressPad(event)">S</button>
       </div>
       <div class="container">
         <button id="start-btn" class="control-btn" onclick="startGame()">Start</button>
