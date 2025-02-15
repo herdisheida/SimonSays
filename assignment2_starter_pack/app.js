@@ -77,10 +77,7 @@ const pressPad = (padId) => {
     //We initialise the synthesiser
     // playTune();
     // checkMatch(); // check if pad sequence was correct
-
 }
-
-
 
 const playTune = (e) => {
     let sound = document.getElementById("sound-select")
@@ -93,6 +90,15 @@ const checkMatch = (e) => {
     // if it matches: continue with game (get another color to the sequence)
     // if it doesn't match: make failure msg appear + restart button
 }
+
+
+const replaySequence = (e) => {
+    // replay the sequence
+    console.log("Replay button was pressed");
+};
+
+
+
 
 
 
@@ -121,23 +127,11 @@ const keyPressPad = (e) => {
                 padOnCooldown = false;
                 pad.classList.remove("cooldown"); // DELETE might
                 pad.classList.remove("clickKey"); // disables pad:active
-            }, 230); // delayd by 230ms
+            }, 190); // delayd by 190ms
         };
     };
 }
 
-
-// user presses the replay button (a sequence is repeated)
-document.getElementById("replay-btn").addEventListener("click", (e) => {
-    console.log("Replay button was pressed");
-    replaySequence(e);
-});
-
-// user presses the reset button
-document.getElementById("reset-btn").addEventListener("click", (e) => {
-    console.log("Reset button was pressed");
-    resetGame(e);
-});
 
 
 // user changes pad-press-sound
@@ -182,9 +176,7 @@ const getHighScore = () => {
     // • If the player achieves a new high score, it updates dynamically on the screen.
 };
 
-const replaySequence = () => {
-    // replay the sequence
-};
+
 
 
 resetGame() // TODO: so that each time page loads, it calls resetGame instead of disabledButtons()
