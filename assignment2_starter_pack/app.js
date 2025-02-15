@@ -112,27 +112,49 @@ const addToSequence = () => {
 // play the pad-sequence
 const playSequence = async () => {
     isSequencePlaying = true;
-    const highlightPadDuration = 500 // the time pad is animated
-    const intervalBetweenPads = 1000
+    // const highlightPadDuration = 500 // the time pad is animated
+    // const intervalBetweenPads = 1000
 
-    padSequence.forEach((padId, index) => {
-        const pad = document.getElementById(padId)
-        console.log(isKeyboardEnabled)
+//     padSequence.forEach((padId, index) => {
+//         const pad = document.getElementById(padId)
+//         console.log(isKeyboardEnabled)
 
-        setTimeout(async () => {
-            await new Promise(resolve => setTimeout(resolve, 800)); // wait before starting
-            pad.classList.add("clickKey"); // highlight pad
-            playTone(padId)// TODO play tone here
-            await new Promise(resolve => setTimeout(resolve, 500));
-            pad.classList.remove("clickKey") // remove highlight after waiting
-        }, index * intervalBetweenPads); // wait inbetween each pad
-    });
+//         setTimeout(async () => {
+//             await new Promise(resolve => setTimeout(resolve, 800)); // wait before starting
+//             pad.classList.add("clickKey"); // highlight pad
+//             playTone(padId)// TODO play tone here
+//             await new Promise(resolve => setTimeout(resolve, 500));
+//             pad.classList.remove("clickKey") // remove highlight after waiting
+//         }, index * intervalBetweenPads); // wait inbetween each pad
+//     });
 
-    await Promise.all(padPromises); // wait for padSequence to finish
+//     await Promise.all(padPromises); // wait for padSequence to finish
+//     isSequencePlaying = false;
+//     console.log("should be false " + isKeyboardEnabled)
+//     console.log("sequence PLAYER!!!");
+// }
+
+  // 1. Create an array of Promises - one for each pad's animation
+    const padPromises = padSequence.map((padId, index) => 
+        new Promise((resolve) => {
+            setTimeout(async () => {
+                const pad = document.getElementById(padId);
+                
+                await new Promise(r => setTimeout(r, 800)); // delay before highliting
+                pad.classList.add("clickKey"); // highlight pad
+                await new Promise(r => setTimeout(r, 500)); // highlight duration
+                pad.classList.remove("clickKey"); // remove highlight
+                
+                resolve(); // mark the pad's animation as finished
+            }, index * 1000); // start each pad animation with 1sec interval
+        })
+    );
+
+    // wait for padSequence to complete
+    await Promise.all(padPromises);
     isSequencePlaying = false;
-    console.log("should be false " + isKeyboardEnabled)
-    console.log("sequence PLAYER!!!");
-}
+    console.log("Sequence complete!"); // DELETE
+};
 
 
 
