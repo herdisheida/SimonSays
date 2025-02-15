@@ -181,26 +181,4 @@ document.addEventListener("keydown", (e) => {
 });
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-const getHighScore = () => {
-    // get high score
-    // • If the player achieves a new high score, it updates dynamically on the screen.
-};
-
-
-
-
-resetGame() // TODO: so that each time page loads, it calls resetGame instead of disabledButtons()
+resetGame() // TODO --- fix this look -- contact the backend stuff
