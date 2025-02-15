@@ -37,7 +37,6 @@ const startGame = () => {
     document.getElementById("start-btn").disabled = true;
 
     addToSequence();
-    playSequence();
 
 
 // TODO The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
@@ -93,7 +92,10 @@ const checkMatch = (padId) => {
 }
 
 const addToSequence = () => { // TODO: kannski ekkki fall - lookar stupid
-    if (padSequence.length === padSeqIndex) {padSequence.push(getRandomPad())};
+    if (padSequence.length === padSeqIndex) {
+        padSequence.push(getRandomPad());
+        playSequence();
+    };
 }
     // play the pad-sequence
 const playSequence = (e) => {
@@ -117,20 +119,19 @@ const getRandomPad = () => {
 // play tune when pressed and animate pad
 document.addEventListener("keyup", (e) => {
     if (! isKeyboardEnabled) {return};
-    padId = keyToPad[e.key]
+    padId = keyToPad[e.key];
     if (padId) {
         pressPad(padId);
         document.getElementById(padId).classList.remove("clickKey");
-        console.log("GOING THROUGH")
-    }
+    };
 });
 
 // turns pad back to original look
 document.addEventListener("keydown", (e) => {
     if (! isKeyboardEnabled) {return};
     if (keyToPad[e.key]) {
-        document.getElementById(keyToPad[e.key]).classList.add("clickKey")
-    }
+        document.getElementById(keyToPad[e.key]).classList.add("clickKey");
+    };
 });
 
 // const keyPressPad = (e) => {
