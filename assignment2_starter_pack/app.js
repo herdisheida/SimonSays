@@ -98,6 +98,7 @@ const addToSequence = () => { // TODO: kannski ekkki fall - lookar stupid
     // play the pad-sequence
 const playSequence = (e) => {
     console.log(padSequence)
+    // padSequence.forEach(padId => {}) 
 
     console.log("Replay button was pressed");
 };
@@ -115,37 +116,23 @@ const getRandomPad = () => {
 
 
 
+const animatePadPress = (padId) => {
+        const pad = document.getElementById(padId);
+        pad.classList.add("clickKey"); // enables pad:active
+        setTimeout(() => {
+            pad.classList.remove("clickKey"); // disables pad:active
+        }, 190); // delayd by 190ms
+}
 
-let padOnCooldown = false // cooldown for each pad
 const keyPressPad = (e) => {
      // find corresponding pad-id from key
     const padId = padKeys [e.key];
-    if (padId) { // if key has a corrisponding pad-id
-        // prevent pad from being spammed (1 sec cooldown)
-        if (padOnCooldown) {
-            e.preventDefault() // block the action
-            console.log("pad is on cooldown"); // DELETE console
-            return;
-
-        } else {
-            // when key is pressed
-            const pad = document.getElementById(padId);
-            pad.focus();
-            padOnCooldown = true;
-            pad.classList.add("cooldown"); // DELETE might
-            pad.classList.add("clickKey"); // enables pad:active
-            pressPad(padId);
-            
-            // stop cooldown
-            setTimeout(() => {
-                padOnCooldown = false;
-                pad.classList.remove("cooldown"); // DELETE might
-                pad.classList.remove("clickKey"); // disables pad:active
-            }, 190); // delayd by 190ms
-        };
+    if (padId) { // if valid key is pressed
+        const pad = document.getElementById(padId);
+        animatePadPress(padId)
+        pressPad(padId);
     };
 }
-
 
 
 // user changes pad-press-sound
