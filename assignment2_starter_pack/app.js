@@ -10,12 +10,21 @@ const keyToPad = {
     a: "pad-green",
     s: "pad-blue"
 };
+const toneForPads = {
+    "pad-red": "c4",
+    "pad-yellow": "e4",
+    "pad-green": "d4",
+    "pad-blue": "f4"
+}
+
+
+
 let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
 let level = 1; // TODO: starts at lvl 1
 let padSeqIndex = 0
 let isKeyboardEnabled = false
 
-// const synth = new Tone.Synth().toDestination(); // TEST
+// const synth = new Tone.Synth().toDestination(); // BUG
 
 
 
@@ -26,21 +35,21 @@ let isKeyboardEnabled = false
 const resetGame = () => {
     padSequence = [];
     level = 1;
+
     disableButtons();
+    document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
     console.log("Game reset to idle state"); // DELETE console
+
 }
 
 // all buttons are enabled and the start-btn is disabled
 const startGame = () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
-
     addToSequence();
+    // synth = new Tone.Synth().toDestination();  // TEST
 
-
-// TODO The frontend plays the sequence by lighting up pads and playing sounds with reasonable interval.
-// TODO The tone style that is played must be the one that is selected in the dropdown menu.
 }
 
 const disableButtons = () => {
@@ -57,44 +66,44 @@ const enableButtons = () => {
 
 // pad press function
 const pressPad = (padId) => {
-    console.log(padId + " was pressed");
-    // make sound
-    // save pressPad --- compare it with padSequences
-    // We initialise the synthesiser
-    playSound();
-    padSeqIndex += 1;
+    console.log(padId + " was pressed"); // DELETE
+    padSeqIndex++;
+    playTone(padId);
 
-    checkMatch(padId); // check if pad press was correct
+    checkMatch(padId, padSeqIndex); // check if pad press was correct
     addToSequence() // add if necesary
+
 }
 
-const playSound = () => {
-    // get the select elements
+const playTone = (padId) => {
     const sounds = document.getElementById("sound-select");
-    // get the selected sound
     const selectedSound = sounds.value; // "sine" |"square" | "triangle"
 
-
-    // PLAY THE SOUND
-    // const now = Tone.now(); // get time
-    // synth.triggerAttackRelease("c4", "8n", now); // play note
-
+    // // PLAY THE SOUND
+    // note = toneForPads[padId];
+    // synth.triggerAttackRelease(note,"8n", Tone.now());
+    // TODO
 }
 
+// check if userInpust is the same as padSequence (continnue game if True else game over)
+const checkMatch = (padId, padSeqIndex) => {
+    if (padSequence[padSeqIndex] === padId) {
+        addToSequence();
+        level++;
+    } else {
+        // if it doesn't match: make failure msg appear + restart button
 
-const checkMatch = (padId) => {
-    // check if userInput matches padSequence
 
-
-    // if it matches: continue with game (get another color to the sequence)
-
-    // if it doesn't match: make failure msg appear + restart button
+        document.getElementById("failure-modal").style.display = "flex";
+        isKeyboardEnabled = false;
+    }
 }
 
 const addToSequence = () => { // TODO: kannski ekkki fall - lookar stupid
     if (padSequence.length === padSeqIndex) {
         padSequence.push(getRandomPad());
         playSequence();
+        padSeqIndex = 0
     };
 }
     // play the pad-sequence
