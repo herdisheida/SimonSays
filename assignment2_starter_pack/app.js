@@ -43,6 +43,12 @@ const resetGame = () => {
     padSequence = [];
     level = 1; // initalized at 1
     document.getElementById("level-indicator").innerHTML = level;
+
+
+    highScore = window.localStorage.getItem(key); // HELP: á þetta að vera BACKEND?
+    document.getElementById("high-score").innerHTML = highScore;
+
+
     
     userPadPressCount = 0
 
