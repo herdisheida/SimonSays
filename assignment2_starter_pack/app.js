@@ -10,16 +10,18 @@ const padKeys = {
     a: "pad-green",
     s: "pad-blue"
 };
+let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
+let level = 1; // TODO: starts at lvl 1
+let padSeqIndex = 0
 
 
 
 
 
-// WHEN PAGE IS LOADED
-
+// when page is reloaded or opened for the first time
 const resetGame = () => {
-    let level = 1; // TODO: starts at lvl 1
-    let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
+    padSequence = []
+    level = 1
 
     // disable all buttons except the start-btn
     disableButtons();
@@ -31,6 +33,8 @@ const startGame = () => {
     // enable all buttons and disable the start-btn
     enableButtons();
     document.getElementById("start-btn").disabled = true;
+
+    addToSequence() // TEST
 
     // put focus on a pad, in order for keyboard to work simulatnioutsly
     document.getElementById("pad-red").focus() // TODO: FIX THIS UGLY THING -- it works but ugly
@@ -57,6 +61,46 @@ const enableButtons = () => {
 }
 
 
+// pad press function
+const pressPad = (padId) => {
+    console.log(padId + " was pressed");
+    // make sound
+    // save pressPad --- compare it with padSequences
+    // We initialise the synthesiser
+    // playTune();
+    padSeqIndex += 1
+
+    checkMatch(padId); // check if pad press was correct
+    addToSequence() // add if necesary
+}
+
+const playTune = (e) => {
+    let sound = document.getElementById("sound-select")
+    // PLAY SOMETHING
+}
+
+
+const checkMatch = (padId) => {
+    // check if userInput matches padSequence
+
+
+    // if it matches: continue with game (get another color to the sequence)
+
+    // if it doesn't match: make failure msg appear + restart button
+}
+
+const addToSequence = () => { // TODO: kannski ekkki fall - lookar stupid
+    if (padSequence.length === padSeqIndex) {
+        padSequence.push(getRandomPad());
+        playSequence() // play new sequence
+    };
+}
+    // play the pad-sequence
+const playSequence = (e) => {
+    console.log(padSequence)
+
+    console.log("Replay button was pressed");
+};
 
 const getRandomPad = () => {
     // get values from object
@@ -67,36 +111,6 @@ const getRandomPad = () => {
     let randomPad = padValues[i];
     return randomPad;
 }
-
-
-// pad press function
-const pressPad = (padId) => {
-    console.log(padId + " was pressed");
-    // make sound
-    // save pressPad --- compare it with padSequences
-    //We initialise the synthesiser
-    // playTune();
-    // checkMatch(); // check if pad sequence was correct
-}
-
-const playTune = (e) => {
-    let sound = document.getElementById("sound-select")
-    // PLAY SOMETHING
-}
-
-
-const checkMatch = (e) => {
-    // check if userInput matches padSequence
-    // if it matches: continue with game (get another color to the sequence)
-    // if it doesn't match: make failure msg appear + restart button
-}
-
-
-const replaySequence = (e) => {
-    // replay the sequence
-    console.log("Replay button was pressed");
-};
-
 
 
 
@@ -151,13 +165,6 @@ const keyPressPad = (e) => {
 
 
 
-
-
-
-
-const playRandomColorSequence = () => {
-    // play color sequence
-};
 
 const validateUserInput = () => {
     // check if user input is == to the sequence
