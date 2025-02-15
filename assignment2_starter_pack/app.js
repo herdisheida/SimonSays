@@ -1,5 +1,5 @@
 // window.localstorage ----- til að geyma high score
-
+// HELP: TA --- eiga padSequence að breytast í hverju lvl, ég hélt að runan ætti að vera nákæmlega eins nema bæta einnum pad við??
 
 
 
@@ -20,7 +20,9 @@ const toneForPads = {
 
 
 let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
-let level = 1; // TODO: starts at lvl 1
+let level = 1; // initalized at 1
+let highScore = 0;
+
 let userPadPressCount = 0 // for each lvl
 let isKeyboardEnabled = false
 let isSequencePlaying = false;
@@ -31,11 +33,17 @@ let isSequencePlaying = false;
 
 
 
-
 // idle-state, all buttans except the start-btn are disabled
+
+// HELP ÁRIÐANDI -- contact the backend here ??
+//  HELP reset by contacting the backend
+//  HELP retrieve the highscore
 const resetGame = () => {
+
     padSequence = [];
-    level = 1;
+    level = 1; // initalized at 1
+    document.getElementById("level-indicator").innerHTML = level;
+    
     userPadPressCount = 0
 
     disableButtons();
@@ -50,6 +58,7 @@ const startGame = () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
     addToSequence();
+    playSequence();
 
     console.log("game has started") // DELETE
     // synth = new Tone.Synth().toDestination();  // TEST
@@ -90,24 +99,36 @@ const playTone = (padId) => {
 }
 
 // check if userInpust is the same as padSequence (continnue game if True else game over)
+// HELP ÁRIÐANDI -- contact the backend here ??
 const checkMatch = (padId, userPadPressCount) => {
-    if (padSequence[userPadPressCount - 1] === padId) {
-        level++;
-        addToSequence();
-    } else {
+    if (padSequence[userPadPressCount - 1] != padId) { // if the pad pressed is incorrect
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
-    };
+    } else if (padSequence.length === userPadPressCount) {
+        advanceLevel();
+        addToSequence();
+        playSequence();
+    }
 }
 
 // make sequence longer if player presses right pads
-const addToSequence = () => {
-    if (padSequence.length === userPadPressCount) {
-        padSequence.push(getRandomPad());
-        playSequence();
-        userPadPressCount = 0; // reset for next level
+const advanceLevel = () => {
+        // update level-indicator
+        level++;
+        document.getElementById("level-indicator").innerHTML = level;
+        // update high-score if necessary
+        if (level > highScore) {
+            highScore = level;
+            document.getElementById("high-score").innerHTML = highScore;
+            window.localStorage.setItem("high-score", highScore) // save highscore in backend
+        };
     };
+
+const addToSequence = () => {
+    padSequence.push(getRandomPad());
+    userPadPressCount = 0; // reset for next level
 }
+
 
 // play generated pad sequence
 const playSequence = async () => {
@@ -172,18 +193,6 @@ document.addEventListener("keydown", (e) => {
 
 
 
-
-
-const validateUserInput = () => {
-    // check if user input is == to the sequence
-    // • If the input is correct, the game progresses with an extended sequence.
-    // • If the input is incorrect, a failure message (modal) appears, allowing the player to start a new game.
-};
-
-
-const showFailureMessage = () => {
-    // showed when user input is incorrect
-};
 
 
 const getHighScore = () => {
