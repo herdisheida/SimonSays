@@ -21,7 +21,7 @@ const toneForPads = {
 
 let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
 let level = 1; // TODO: starts at lvl 1
-let padSeqIndex = 0
+let userPadPressCount = 0 // for each lvl
 let isKeyboardEnabled = false
 
 // const synth = new Tone.Synth().toDestination(); // BUG
@@ -48,6 +48,8 @@ const startGame = () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
     addToSequence();
+
+    console.log("game has started") // DELETE
     // synth = new Tone.Synth().toDestination();  // TEST
 
 }
@@ -67,11 +69,12 @@ const enableButtons = () => {
 // pad press function
 const pressPad = (padId) => {
     console.log(padId + " was pressed"); // DELETE
-    padSeqIndex++;
+    userPadPressCount++;
     playTone(padId);
 
-    checkMatch(padId, padSeqIndex); // check if pad press was correct
-    addToSequence() // add if necesary
+    checkMatch(padId, userPadPressCount); // check if pad press was correct
+    console.log("TEST")
+    console.log(padSequence)
 
 }
 
@@ -86,42 +89,37 @@ const playTone = (padId) => {
 }
 
 // check if userInpust is the same as padSequence (continnue game if True else game over)
-const checkMatch = (padId, padSeqIndex) => {
-    if (padSequence[padSeqIndex] === padId) {
-        addToSequence();
+const checkMatch = (padId, userPadPressCount) => {
+    if (padSequence[userPadPressCount - 1] === padId) {
         level++;
+        addToSequence();
     } else {
-        // if it doesn't match: make failure msg appear + restart button
-
-
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
-    }
+    };
 }
 
-const addToSequence = () => { // TODO: kannski ekkki fall - lookar stupid
-    if (padSequence.length === padSeqIndex) {
+// make sequence longer if player presses right pads
+const addToSequence = () => {
+    if (padSequence.length === userPadPressCount) {
         padSequence.push(getRandomPad());
         playSequence();
-        padSeqIndex = 0
+        userPadPressCount = 0 // reset for next level
     };
 }
     // play the pad-sequence
-const playSequence = (e) => {
+const playSequence = () => {
     console.log(padSequence)
     // padSequence.forEach(padId => {}) 
 
     console.log("play sequence was pressed");
 };
 
+// generate and return random pad to add to the sequence
 const getRandomPad = () => {
-    // get values from object
-    const padValues = Object.values(keyToPad);
-    // randomize index
-    let i = Math.floor(Math.random() * padValues.length);
-    // get and return a random pad from the index
-    let randomPad = padValues[i];
-    return randomPad;
+    const padValues = Object.values(keyToPad); // get values from object
+    let i = Math.floor(Math.random() * padValues.length); // randomize index
+    return padValues[i]; // return a random pad
 }
 
 
