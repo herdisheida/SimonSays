@@ -23,6 +23,7 @@ let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
 let level = 1; // TODO: starts at lvl 1
 let userPadPressCount = 0 // for each lvl
 let isKeyboardEnabled = false
+let isSequencePlaying = false;
 
 // const synth = new Tone.Synth().toDestination(); // BUG
 
@@ -35,6 +36,7 @@ let isKeyboardEnabled = false
 const resetGame = () => {
     padSequence = [];
     level = 1;
+    userPadPressCount = 0
 
     disableButtons();
     document.getElementById("failure-modal").style.display = "none";
@@ -68,12 +70,15 @@ const enableButtons = () => {
 
 // pad press function
 const pressPad = (padId) => {
+    if (isSequencePlaying) {return};
+
     console.log(padId + " was pressed"); // DELETE
     userPadPressCount++;
     playTone(padId);
 
     checkMatch(padId, userPadPressCount); // check if pad press was correct
-    console.log("TEST")
+
+    console.log("TEST") // DELETE
     console.log(padSequence)
 
 }
@@ -101,18 +106,40 @@ const checkMatch = (padId, userPadPressCount) => {
 
 // make sequence longer if player presses right pads
 const addToSequence = () => {
+
+    console.log("TESTING AFTER RESET")
+    console.log(padSequence.length)
+    console.log(userPadPressCount)
+
+
     if (padSequence.length === userPadPressCount) {
         padSequence.push(getRandomPad());
         playSequence();
-        userPadPressCount = 0 // reset for next level
+        userPadPressCount = 0; // reset for next level
     };
 }
     // play the pad-sequence
 const playSequence = () => {
-    console.log(padSequence)
-    // padSequence.forEach(padId => {}) 
+    isSequencePlaying = true;
+    // console.log(padSequence); // DELETE
+    const highlightPadDuration = 200 // the time pad is animated
+    const intervalBetweenPads = 1000
 
-    console.log("play sequence was pressed");
+    padSequence.forEach((padId, index) => {
+        const pad = document.getElementById(padId)
+
+        setTimeout(() => {
+            pad.classList.add("clickKey"); // highlight pad
+        
+        setTimeout(() => {
+            pad.classList.remove("clickKey") // remove highlight after duration
+        }, highlightPadDuration)
+        
+        }, index * intervalBetweenPads);
+    });
+
+    isSequencePlaying = false;
+    console.log("play sequence!!!");
 };
 
 // generate and return random pad to add to the sequence
@@ -125,7 +152,7 @@ const getRandomPad = () => {
 
 // play tune when pressed and animate pad
 document.addEventListener("keyup", (e) => {
-    if (! isKeyboardEnabled) {return};
+    if (! isKeyboardEnabled || isSequencePlaying) {return};
     padId = keyToPad[e.key];
     if (padId) {
         pressPad(padId);
@@ -135,7 +162,7 @@ document.addEventListener("keyup", (e) => {
 
 // turns pad back to original look
 document.addEventListener("keydown", (e) => {
-    if (! isKeyboardEnabled) {return};
+    if (! isKeyboardEnabled || isSequencePlaying) {return};
     if (keyToPad[e.key]) {
         document.getElementById(keyToPad[e.key]).classList.add("clickKey");
     };
@@ -150,13 +177,13 @@ document.addEventListener("keydown", (e) => {
 //         pressPad(padId);
 //     };
 // }
-// const animatePadPress = (padId) => {
-//     const pad = document.getElementById(padId);
-//     pad.classList.add("clickKey"); // enables pad:active
-//     setTimeout(() => {
-//         pad.classList.remove("clickKey"); // disables pad:active
-//     }, 190); // animate press for 190ms
-// }
+const animatePadPress = (padId) => {
+    const pad = document.getElementById(padId);
+    pad.classList.add("clickKey"); // enables pad:active
+    setTimeout(() => {
+        pad.classList.remove("clickKey"); // disables pad:active
+    }, 190); // animate press for 190ms
+}
 
 
 // user changes pad-press-sound
