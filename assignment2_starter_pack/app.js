@@ -39,13 +39,12 @@ let isSequencePlaying = false;
 //  HELP reset by contacting the backend
 //  HELP retrieve the highscore
 const resetGame = async () => {
-    // get game info
+    // get and set game info
     const gameState = await putGameState()
     highScore = gameState.highScore
     level = gameState.level
     sequence = gameState.sequence.map(color => {return "pad-" + color}) // elements in array are padIds
-
-    userPadPressCount = 0 // MAYBE DELETE
+    userPadPressCount = 0 // reset for each new game
 
     // display game info
     document.getElementById("level-indicator").innerHTML = level;
@@ -61,18 +60,14 @@ const resetGame = async () => {
 
 // get gameState from backend by perfoming a PUT request
 const putGameState = async () => {
-    // the URL to which we will send the request
-    const url = "http://localhost:3000/api/v1/game-state";
-    // perform a PUT request to the url
+    const url = "http://localhost:3000/api/v1/game-state"; // the URL for the request
     try {
       const response = await axios.put(url);
-      // when successful, extract data
-      return response.data.gameState
+      return response.data.gameState; // when successful, extract data
     } catch (error) {
-      // when unsuccessful, print the error.
-      console.log(error);
-    }
-  };
+      console.log(error); // when unsuccessful, print the error.
+    };
+}
 
 
   
