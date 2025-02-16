@@ -1,9 +1,3 @@
-// window.localstorage ----- til að geyma high score
-// HELP: TA --- eiga sequence að breytast í hverju lvl, ég hélt að runan ætti að vera nákæmlega eins nema bæta einnum pad við??
-
-// TODO advanceLevel BACKEND
-// TODO 
-
 // give each pad a unique keyboard key
 const keyToPad = {
     q: "pad-red",
@@ -11,7 +5,7 @@ const keyToPad = {
     a: "pad-green",
     s: "pad-blue"
 };
-const soundForPads = {
+const noteForPads = {
     "pad-red": "C4",
     "pad-yellow": "D4",
     "pad-green": "E4",
@@ -68,20 +62,18 @@ const putGameState = async () => {
 
   
 // all buttons are enabled and the start-btn is disabled
-const startGame = () => {
+const startGame = (e) => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
-    // addToSequence();
     playSequence();
 }
 
 const disableButtons = () => {
-    const allButtons = document.querySelectorAll("button");
-    allButtons.forEach(button => {button.disabled = true});
+    document.querySelectorAll("button").forEach(button => {button.disabled = true});
+    isKeyboardEnabled = false;
 }
 const enableButtons = () => {
-    const allButtons = document.querySelectorAll("button");
-    allButtons.forEach(button => {button.disabled = false});
+    document.querySelectorAll("button").forEach(button => {button.disabled = false});
     isKeyboardEnabled = true;
 }
 
@@ -94,15 +86,15 @@ const pressPad = (padId) => {
     if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
 }
 
+// plays sound for each pad press (as well when the sequence is playing)
 const playSound = (padId) => {
+    // get and change sound selector
     const sounds = document.getElementById("sound-select");
-
-    // TODO connect the dropdown to the sound
-    const selectedSound = sounds.value; // "sine" |"square" | "triangle"
+    const selectedSound = sounds.value;
     synth.oscillator.type = selectedSound
-
-    // get corresponding sound for pad
-    note = soundForPads[padId];
+    // get corresponding note for pad
+    note = noteForPads[padId];
+    
     synth.triggerAttackRelease(note,"5n", Tone.now());
 }
 
@@ -144,6 +136,7 @@ const validateUserSequence = async (userSequence) => {
 // play generated pad sequence
 const playSequence = async () => {
     isSequencePlaying = true;
+    disableButtons(); // DELETE ekki í use case
     // create an array of pad's animations
     const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
@@ -164,6 +157,8 @@ const playSequence = async () => {
     // wait for sequence to complete
     await Promise.all(padPromises);
     isSequencePlaying = false;
+    enableButtons(); // DELETE ekki í use case
+    document.getElementById("start-btn").disabled = true; // DELETE ekki í use case
 };
 
 
@@ -186,13 +181,12 @@ document.addEventListener("keydown", (e) => {
 });
 
 
+// disable clicking buttons or pads, whilst the sequence is playing/replaying
+// document.addEventListener("click", async (e) => {
+//     if (isSequencePlaying) {
+//         e.target.disabled = true;
+//     }
+// }); // TODO --- ekki hægt að ýta á meðan sequence is plahing
 
-// DELETE ask first
-// document.getElementById("start-btn").addEventListener("click", async () => {
-//     await Tone.context.resume(); // wait
-
-//     // TEST
-//     synth = new Tone.Synth().toDestination();
-// });
 
 resetGame() // TODO --- fix this look -- contact the backend stuff

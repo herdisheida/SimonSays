@@ -20,6 +20,13 @@ body {
   font-size: 2.5vw;
 }
 
+.no-interaction #sound-select-disabled { /* pad keeps original look*/
+  filter: none !important;
+  transform: none !important;
+  transition: none !important;
+  pointer-events: none;
+}
+
 .pad:enabled:active, .clickKey {
   filter: brightness(0.5);
   transform: scale(1.1);
