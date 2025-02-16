@@ -156,13 +156,14 @@ const addToSequence = () => {
 const playSequence = async () => {
     isSequencePlaying = true;
     // create an array of pad's animations
-    const padPromises = sequence.map((padId, index) => 
+    const padPromises = sequence.map((padColor, index) => 
         new Promise((resolve) => {
             setTimeout(async () => {
+                // get pad info
+                padId = "pad-" + padColor
                 const pad = document.getElementById(padId);
-
+                
                 await new Promise(r => setTimeout(r, 800)); // delay before highliting
-                console.log("THIS NOT WORKING ?")
                 pad.classList.add("clickKey"); // highlight pad
                 await new Promise(r => setTimeout(r, 500)); // highlight duration
                 pad.classList.remove("clickKey"); // remove highlight
