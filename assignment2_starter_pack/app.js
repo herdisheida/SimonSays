@@ -44,6 +44,10 @@ const resetGame = async () => {
     highScore = gameState.highScore
     level = gameState.level
     sequence = gameState.sequence
+    console.log(sequence)
+    const seq = sequence.map(color => {return "pad-" + color})
+    console.log(seq)
+
     userPadPressCount = 0 // MAYBE DELETE
 
     // display game info
