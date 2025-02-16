@@ -1,7 +1,8 @@
 // window.localstorage ----- til að geyma high score
 // HELP: TA --- eiga sequence að breytast í hverju lvl, ég hélt að runan ætti að vera nákæmlega eins nema bæta einnum pad við??
 
-
+// TODO advanceLevel BACKEND
+// TODO 
 
 // give each pad a unique keyboard key
 const keyToPad = {
@@ -18,12 +19,13 @@ const toneForPads = {
 }
 
 
-
-let sequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
+// TODO: vtk hvort ég ætli að initaliza þetta hér..
+let sequence = []
+let userSequence = []
 let level = 1; // initalized at 1
 let highScore = 0;
 
-let userPadPressCount = 0 // for each lvl
+// let userPadPressCount = 0 // for each lvl
 let isKeyboardEnabled = false
 let isSequencePlaying = false;
 
@@ -34,17 +36,13 @@ let isSequencePlaying = false;
 
 
 // idle-state, all buttans except the start-btn are disabled
-
-// HELP ÁRIÐANDI -- contact the backend here ??
-//  HELP reset by contacting the backend
-//  HELP retrieve the highscore
 const resetGame = async () => {
     // get and set game info
     const gameState = await putGameState()
     highScore = gameState.highScore
     level = gameState.level
-    sequence = gameState.sequence.map(color => {return "pad-" + color}) // elements in array are padIds
-    userPadPressCount = 0 // reset for each new game
+    sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
+    userSequence = []
 
     // display game info
     document.getElementById("level-indicator").innerHTML = level;
@@ -80,7 +78,6 @@ const startGame = () => {
 
     console.log("game has started") // DELETE
     // synth = new Tone.Synth().toDestination();  // TEST
-
 }
 
 const disableButtons = () => {
@@ -91,7 +88,6 @@ const enableButtons = () => {
     const allButtons = document.querySelectorAll("button");
     allButtons.forEach(button => {button.disabled = false});
     isKeyboardEnabled = true;
-
 }
 
 
@@ -100,10 +96,15 @@ const pressPad = (padId) => {
     if (isSequencePlaying) {return};
 
     console.log(padId + " was pressed"); // DELETE
-    userPadPressCount++;
     playTone(padId);
 
-    checkMatch(padId, userPadPressCount); // check if pad press was correct
+    userSequence.push(padId);
+    if (sequence.length === userSequence.length) {advanceLevel(userSequence)}
+
+    
+    console.log("user " + userSequence)
+    console.log("seq " + sequence)
+
 }
 
 const playTone = (padId) => {
@@ -116,36 +117,46 @@ const playTone = (padId) => {
     // TODO
 }
 
-// check if userInpust is the same as sequence (continnue game if True else game over)
-// HELP ÁRIÐANDI -- contact the backend here ??
-const checkMatch = (padId, userPadPressCount) => {
-    if (sequence[userPadPressCount - 1] != padId) { // if the pad pressed is incorrect
+// check if userSequence is valid (the same as the computer generated sequence)
+const advanceLevel = async (currentUserSequence) => {
+    userInput = currentUserSequence.map(padId => padId.replace(/pad-/, "")) // turn padId into colors
+    const gameState = await postGameSequence(userInput)
+    
+    // get gameState info
+    level = gameState.level
+    highScore = gameState.highScore
+    // update info
+    if ((level - 1) > highScore) {highScore = level - 1};
+    // userPadPressCount = 0 // reset for next lvl
+    userSequence = []  // reset for next lvl
+
+    // show updated info
+    document.getElementById("level-indicator").innerHTML = level;
+    document.getElementById("high-score").innerHTML = highScore;
+
+    sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
+    playSequence();
+}
+
+// check if user from backend by perfoming a PUT request
+const postGameSequence = async (userSequence) => {
+    // format userSequence for POST request
+    const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
+    try {
+        const response = await axios.post(url, { sequence: userSequence }); // Sending a POST request with data
+        return response.data.gameState
+    } catch (error) {
+        // HELP TA --- á ég að setja failure hérna ? því +eg fæ alltaf error þegar ég geri rangt seqeuence
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
-    } else if (sequence.length === userPadPressCount) {
-        advanceLevel();
-        addToSequence();
-        playSequence();
-    }
-}
-
-// make sequence longer if player presses right pads
-const advanceLevel = () => {
-        // update level-indicator
-        level++;
-        document.getElementById("level-indicator").innerHTML = level;
-        // update high-score if necessary
-        if (level > highScore) {
-            highScore = level;
-            document.getElementById("high-score").innerHTML = highScore;
-            window.localStorage.setItem("high-score", highScore) // save highscore in backend
-        };
     };
-
-const addToSequence = () => {
-    sequence.push(getRandomPad());
-    userPadPressCount = 0; // reset for next level
 }
+
+
+// const addToSequence = () => {
+//     sequence.push(getRandomPad());
+//     userPadPressCount = 0; // reset for next level
+// }
 
 
 // play generated pad sequence
