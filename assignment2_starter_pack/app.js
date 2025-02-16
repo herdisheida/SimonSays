@@ -11,25 +11,27 @@ const keyToPad = {
     a: "pad-green",
     s: "pad-blue"
 };
-const toneForPads = {
+const soundForPads = {
     "pad-red": "c4",
-    "pad-yellow": "e4",
-    "pad-green": "d4",
+    "pad-yellow": "d4",
+    "pad-green": "e4",
     "pad-blue": "f4"
 }
 
 
 // TODO: vtk hvort ég ætli að initaliza þetta hér..
-let sequence = []
+let sequence;
 let userSequence = []
-let level = 1; // initalized at 1
-let highScore = 0;
+let level; // initalized at 1
+let highScore;
 
-// let userPadPressCount = 0 // for each lvl
-let isKeyboardEnabled = false
+let isKeyboardEnabled = false;
 let isSequencePlaying = false;
 
-// const synth = new Tone.Synth().toDestination(); // BUG
+
+let synth;
+// const synth = new Tone.Synth().toDestination(); // FIXME
+
 
 
 
@@ -67,7 +69,6 @@ const putGameState = async () => {
     };
 }
 
-
   
 // all buttons are enabled and the start-btn is disabled
 const startGame = () => {
@@ -76,7 +77,6 @@ const startGame = () => {
     // addToSequence();
     playSequence();
 
-    console.log("game has started") // DELETE
     // synth = new Tone.Synth().toDestination();  // TEST
 }
 
@@ -96,31 +96,26 @@ const pressPad = (padId) => {
     if (isSequencePlaying) {return};
 
     console.log(padId + " was pressed"); // DELETE
-    playTone(padId);
+    playSound(padId);
 
     userSequence.push(padId);
-    if (sequence.length === userSequence.length) {advanceLevel(userSequence)}
-
-    
-    console.log("user " + userSequence)
-    console.log("seq " + sequence)
-
+    if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
 }
 
-const playTone = (padId) => {
+const playSound = (padId) => {
     const sounds = document.getElementById("sound-select");
     const selectedSound = sounds.value; // "sine" |"square" | "triangle"
 
-    // // PLAY THE SOUND
-    // note = toneForPads[padId];
-    // synth.triggerAttackRelease(note,"8n", Tone.now());
+    // get corresponding sound for pad
+    note = soundForPads[padId];
+    synth.triggerAttackRelease(note,"8n", Tone.now());
     // TODO
 }
 
 // check if userSequence is valid (the same as the computer generated sequence)
 const advanceLevel = async (currentUserSequence) => {
     userInput = currentUserSequence.map(padId => padId.replace(/pad-/, "")) // turn padId into colors
-    const gameState = await postGameSequence(userInput)
+    const gameState = await validateUserSequence(userInput)
     
     // get gameState info
     level = gameState.level
@@ -139,7 +134,7 @@ const advanceLevel = async (currentUserSequence) => {
 }
 
 // check if user from backend by perfoming a PUT request
-const postGameSequence = async (userSequence) => {
+const validateUserSequence = async (userSequence) => {
     // format userSequence for POST request
     const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
     try {
@@ -152,13 +147,6 @@ const postGameSequence = async (userSequence) => {
     };
 }
 
-
-// const addToSequence = () => {
-//     sequence.push(getRandomPad());
-//     userPadPressCount = 0; // reset for next level
-// }
-
-
 // play generated pad sequence
 const playSequence = async () => {
     isSequencePlaying = true;
@@ -169,9 +157,10 @@ const playSequence = async () => {
                 // get pad info
                 const pad = document.getElementById(padId);
                 
-                await new Promise(r => setTimeout(r, 800)); // delay before highliting
+                await new Promise(r => setTimeout(r, 1300)); // delay before highliting
                 pad.classList.add("clickKey"); // highlight pad
-                await new Promise(r => setTimeout(r, 500)); // highlight duration
+                playSound(padId)
+                await new Promise(r => setTimeout(r, 400)); // highlight duration
                 pad.classList.remove("clickKey"); // remove highlight
         
                 resolve(); // mark the pad's animation as finished
@@ -181,15 +170,7 @@ const playSequence = async () => {
     // wait for sequence to complete
     await Promise.all(padPromises);
     isSequencePlaying = false;
-    console.log("Sequence complete!"); // DELETE
 };
-
-// generate and return random pad to add to the sequence
-const getRandomPad = () => {
-    const padValues = Object.values(keyToPad); // get values from object
-    let i = Math.floor(Math.random() * padValues.length); // randomize index
-    return padValues[i]; // return a random pad
-}
 
 
 // play tune when pressed and animate pad
@@ -210,5 +191,14 @@ document.addEventListener("keydown", (e) => {
     };
 });
 
+
+
+// pause the audio until start-btn is clicked
+document.getElementById("start-btn").addEventListener("click", async () => {
+    await Tone.context.resume(); // wait
+
+    // TEST
+    synth = new Tone.Synth().toDestination();
+});
 
 resetGame() // TODO --- fix this look -- contact the backend stuff
