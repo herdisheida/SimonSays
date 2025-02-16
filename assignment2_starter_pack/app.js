@@ -1,5 +1,5 @@
 // window.localstorage ----- til að geyma high score
-// HELP: TA --- eiga padSequence að breytast í hverju lvl, ég hélt að runan ætti að vera nákæmlega eins nema bæta einnum pad við??
+// HELP: TA --- eiga sequence að breytast í hverju lvl, ég hélt að runan ætti að vera nákæmlega eins nema bæta einnum pad við??
 
 
 
@@ -19,7 +19,7 @@ const toneForPads = {
 
 
 
-let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
+let sequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
 let level = 1; // initalized at 1
 let highScore = 0;
 
@@ -38,32 +38,48 @@ let isSequencePlaying = false;
 // HELP ÁRIÐANDI -- contact the backend here ??
 //  HELP reset by contacting the backend
 //  HELP retrieve the highscore
-const resetGame = () => {
+const resetGame = async () => {
+    // get game info
+    const gameState = await putGameState()
+    highScore = gameState.highScore
+    level = gameState.level
+    sequence = gameState.sequence
+    userPadPressCount = 0 // MAYBE DELETE
 
-    padSequence = [];
-    level = 1; // initalized at 1
+    // display game info
     document.getElementById("level-indicator").innerHTML = level;
-
-
-    highScore = window.localStorage.getItem(key); // HELP: á þetta að vera BACKEND?
     document.getElementById("high-score").innerHTML = highScore;
 
-
-    
-    userPadPressCount = 0
-
+    // set game into idle-state
     disableButtons();
     document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
     console.log("Game reset to idle state"); // DELETE console
-
 }
 
+
+// get gameState from backend by perfoming a PUT request
+const putGameState = async () => {
+    // the URL to which we will send the request
+    const url = "http://localhost:3000/api/v1/game-state";
+    // perform a PUT request to the url
+    try {
+      const response = await axios.put(url);
+      // when successful, extract data
+      return response.data.gameState
+    } catch (error) {
+      // when unsuccessful, print the error.
+      console.log(error);
+    }
+  };
+
+
+  
 // all buttons are enabled and the start-btn is disabled
 const startGame = () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
-    addToSequence();
+    // addToSequence();
     playSequence();
 
     console.log("game has started") // DELETE
@@ -104,13 +120,13 @@ const playTone = (padId) => {
     // TODO
 }
 
-// check if userInpust is the same as padSequence (continnue game if True else game over)
+// check if userInpust is the same as sequence (continnue game if True else game over)
 // HELP ÁRIÐANDI -- contact the backend here ??
 const checkMatch = (padId, userPadPressCount) => {
-    if (padSequence[userPadPressCount - 1] != padId) { // if the pad pressed is incorrect
+    if (sequence[userPadPressCount - 1] != padId) { // if the pad pressed is incorrect
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
-    } else if (padSequence.length === userPadPressCount) {
+    } else if (sequence.length === userPadPressCount) {
         advanceLevel();
         addToSequence();
         playSequence();
@@ -131,7 +147,7 @@ const advanceLevel = () => {
     };
 
 const addToSequence = () => {
-    padSequence.push(getRandomPad());
+    sequence.push(getRandomPad());
     userPadPressCount = 0; // reset for next level
 }
 
@@ -140,12 +156,13 @@ const addToSequence = () => {
 const playSequence = async () => {
     isSequencePlaying = true;
     // create an array of pad's animations
-    const padPromises = padSequence.map((padId, index) => 
+    const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
             setTimeout(async () => {
                 const pad = document.getElementById(padId);
 
                 await new Promise(r => setTimeout(r, 800)); // delay before highliting
+                console.log("THIS NOT WORKING ?")
                 pad.classList.add("clickKey"); // highlight pad
                 await new Promise(r => setTimeout(r, 500)); // highlight duration
                 pad.classList.remove("clickKey"); // remove highlight
@@ -154,7 +171,7 @@ const playSequence = async () => {
             }, index * 1000); // start each pad animation with 1sec interval
         })
     );
-    // wait for padSequence to complete
+    // wait for sequence to complete
     await Promise.all(padPromises);
     isSequencePlaying = false;
     console.log("Sequence complete!"); // DELETE
