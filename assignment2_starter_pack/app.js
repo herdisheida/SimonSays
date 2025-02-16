@@ -12,10 +12,10 @@ const keyToPad = {
     s: "pad-blue"
 };
 const soundForPads = {
-    "pad-red": "c4",
-    "pad-yellow": "d4",
-    "pad-green": "e4",
-    "pad-blue": "f4"
+    "pad-red": "C4",
+    "pad-yellow": "D4",
+    "pad-green": "E4",
+    "pad-blue": "F4"
 }
 
 
@@ -29,9 +29,7 @@ let isKeyboardEnabled = false;
 let isSequencePlaying = false;
 
 
-let synth;
-// const synth = new Tone.Synth().toDestination(); // FIXME
-
+let synth = new Tone.Synth().toDestination();
 
 
 
@@ -54,7 +52,6 @@ const resetGame = async () => {
     disableButtons();
     document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
-    console.log("Game reset to idle state"); // DELETE console
 }
 
 
@@ -76,8 +73,6 @@ const startGame = () => {
     document.getElementById("start-btn").disabled = true;
     // addToSequence();
     playSequence();
-
-    // synth = new Tone.Synth().toDestination();  // TEST
 }
 
 const disableButtons = () => {
@@ -94,22 +89,21 @@ const enableButtons = () => {
 // pad press function
 const pressPad = (padId) => {
     if (isSequencePlaying) {return};
-
-    console.log(padId + " was pressed"); // DELETE
     playSound(padId);
-
     userSequence.push(padId);
     if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
 }
 
 const playSound = (padId) => {
     const sounds = document.getElementById("sound-select");
+
+    // TODO connect the dropdown to the sound
     const selectedSound = sounds.value; // "sine" |"square" | "triangle"
+    synth.oscillator.type = selectedSound
 
     // get corresponding sound for pad
     note = soundForPads[padId];
-    synth.triggerAttackRelease(note,"8n", Tone.now());
-    // TODO
+    synth.triggerAttackRelease(note,"5n", Tone.now());
 }
 
 // check if userSequence is valid (the same as the computer generated sequence)
@@ -122,7 +116,6 @@ const advanceLevel = async (currentUserSequence) => {
     highScore = gameState.highScore
     // update info
     if ((level - 1) > highScore) {highScore = level - 1};
-    // userPadPressCount = 0 // reset for next lvl
     userSequence = []  // reset for next lvl
 
     // show updated info
@@ -142,6 +135,7 @@ const validateUserSequence = async (userSequence) => {
         return response.data.gameState
     } catch (error) {
         // HELP TA --- á ég að setja failure hérna ? því +eg fæ alltaf error þegar ég geri rangt seqeuence
+        // HELP þýðir error 400 --- usererror not server error ?
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
     };
@@ -157,14 +151,14 @@ const playSequence = async () => {
                 // get pad info
                 const pad = document.getElementById(padId);
                 
-                await new Promise(r => setTimeout(r, 1300)); // delay before highliting
+                await new Promise(r => setTimeout(r, 2000)); // delay before highliting
                 pad.classList.add("clickKey"); // highlight pad
                 playSound(padId)
-                await new Promise(r => setTimeout(r, 400)); // highlight duration
+                await new Promise(r => setTimeout(r, 350)); // highlight duration
                 pad.classList.remove("clickKey"); // remove highlight
         
                 resolve(); // mark the pad's animation as finished
-            }, index * 1000); // start each pad animation with 1sec interval
+            }, index * 900); // start each pad animation with 1sec interval
         })
     );
     // wait for sequence to complete
@@ -193,12 +187,12 @@ document.addEventListener("keydown", (e) => {
 
 
 
-// pause the audio until start-btn is clicked
-document.getElementById("start-btn").addEventListener("click", async () => {
-    await Tone.context.resume(); // wait
+// DELETE ask first
+// document.getElementById("start-btn").addEventListener("click", async () => {
+//     await Tone.context.resume(); // wait
 
-    // TEST
-    synth = new Tone.Synth().toDestination();
-});
+//     // TEST
+//     synth = new Tone.Synth().toDestination();
+// });
 
 resetGame() // TODO --- fix this look -- contact the backend stuff
