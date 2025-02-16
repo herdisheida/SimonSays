@@ -5,16 +5,16 @@
 
 // give each pad a unique keyboard key
 const keyToPad = {
-    q: "red",
-    w: "yellow",
-    a: "green",
-    s: "blue"
+    q: "pad-red",
+    w: "pad-yellow",
+    a: "pad-green",
+    s: "pad-blue"
 };
 const toneForPads = {
-    "red": "c4",
-    "yellow": "e4",
-    "green": "d4",
-    "blue": "f4"
+    "pad-red": "c4",
+    "pad-yellow": "e4",
+    "pad-green": "d4",
+    "pad-blue": "f4"
 }
 
 
@@ -43,7 +43,8 @@ const resetGame = async () => {
     const gameState = await putGameState()
     highScore = gameState.highScore
     level = gameState.level
-    const seq = sequence.map(color => {return "pad-" + color})
+    sequence = gameState.sequence.map(color => {return "pad-" + color}) // elements in array are padIds
+
     userPadPressCount = 0 // MAYBE DELETE
 
     // display game info
