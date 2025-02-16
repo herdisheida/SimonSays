@@ -5,16 +5,16 @@
 
 // give each pad a unique keyboard key
 const keyToPad = {
-    q: "pad-red",
-    w: "pad-yellow",
-    a: "pad-green",
-    s: "pad-blue"
+    q: "red",
+    w: "yellow",
+    a: "green",
+    s: "blue"
 };
 const toneForPads = {
-    "pad-red": "c4",
-    "pad-yellow": "e4",
-    "pad-green": "d4",
-    "pad-blue": "f4"
+    "red": "c4",
+    "yellow": "e4",
+    "green": "d4",
+    "blue": "f4"
 }
 
 
@@ -156,11 +156,10 @@ const addToSequence = () => {
 const playSequence = async () => {
     isSequencePlaying = true;
     // create an array of pad's animations
-    const padPromises = sequence.map((padColor, index) => 
+    const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
             setTimeout(async () => {
                 // get pad info
-                padId = "pad-" + padColor
                 const pad = document.getElementById(padId);
                 
                 await new Promise(r => setTimeout(r, 800)); // delay before highliting

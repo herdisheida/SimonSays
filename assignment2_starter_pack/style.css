@@ -39,19 +39,19 @@ body {
   z-index: 1;
 }
 
-#pad-red {
+#red {  /* gamla -- pad-red */
   background-color: #e74c3c;
 }
 
-#pad-yellow {
+#yellow {  /* gamla -- pad-yellow */
   background-color: #f1c40f;
 }
 
-#pad-green {
+#green {  /* gamla -- pad-green */
   background-color: #2ecc71;
 }
 
-#pad-blue {
+#blue {  /* gamla -- pad-blue */
   background-color: #3498db;
 }
 
