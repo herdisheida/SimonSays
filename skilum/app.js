@@ -1,22 +1,21 @@
 // give each pad a unique keyboard key
-const keyToPad = {
+const keyToPad = Object.freeze({
     q: "pad-red",
     w: "pad-yellow",
     a: "pad-green",
     s: "pad-blue"
-}
-const noteForPads = {
+});
+const noteForPads = Object.freeze({
     "pad-red": "C4",
     "pad-yellow": "D4",
     "pad-green": "E4",
     "pad-blue": "F4"
-}
+});
 
 
 let sequence;
 let userSequence = [];
 let level;
-let highScore;
 
 let synth = new Tone.Synth().toDestination();  
 const soundSelector = document.getElementById("sound-select");
