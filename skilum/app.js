@@ -19,9 +19,6 @@ let userSequence = [];
 let level;
 let highScore;
 
-let isKeyboardEnabled = false;
-let isSequencePlaying = false;
-
 let synth = new Tone.Synth().toDestination();    
 
 
@@ -51,40 +48,38 @@ const putGameState = async () => {
       const response = await axios.put(url);
       return response.data.gameState; // when successful, extract data
     } catch (error) {
-      console.log(error); // when unsuccessful, print the error.
+      console.log("error fetching gameState", error);
     };
 }
   
 // initalizes the start of the game, all buttons are enabled and the start-btn is disabled
-const startGame = () => {
+const startGame = async() => {
     enableActivity();
     document.getElementById("start-btn").disabled = true;
-    playSequence();
+    await playSequence();
 }
 
 
 const disableActivity = () => {
     document.querySelectorAll("button").forEach(button => {button.disabled = true});
     isKeyboardEnabled = false;
-    document.getElementById("sound-select").style.pointerEvents = none;
+    document.getElementById("sound-select").style.pointerEvents = "none";
 };
 const enableActivity = () => {
     document.querySelectorAll("button").forEach(button => {button.disabled = false});
     isKeyboardEnabled = true;
-    document.getElementById("sound-select").style.pointerEvents = auto;
+    document.getElementById("sound-select").style.pointerEvents = "auto";
 }
 
 
 // pad press function
 const pressPad = async (padId) => {
-    if (isSequencePlaying) {return}; // cannot press pad if sequence is playing
     playSound(padId);
-
     userSequence.push(padId);
     // disable replay-btn when user has started pressing color-pads
     if (userSequence.length > 0) {document.getElementById("replay-btn").disabled = true};
     // validate userInput
-    if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
+    if (sequence.length === userSequence.length) {await advanceLevel(userSequence)};
 }
 
 // plays sound for each pad press (as well when the sequence is playing)
@@ -94,7 +89,7 @@ const playSound = (padId) => {
     const selectedSound = sounds.value;
     synth.oscillator.type = selectedSound
     // get corresponding note for pad
-    note = noteForPads[padId];
+    let note = noteForPads[padId];
     // make sound
     synth.triggerAttackRelease(note,"5n", Tone.now());
 }
@@ -108,7 +103,7 @@ const advanceLevel = async (currentUserSequence) => {
     level = gameState.level
     highScore = gameState.highScore
     // update info
-    if ((level - 1) > highScore) {highScore = level - 1};
+    highScore = Math.max(highScore, (level - 1))
     userSequence = []  // reset for next lvl
     document.getElementById("replay-btn").disabled = true // enable replay-btn for next lvl
     // show updated info
@@ -116,7 +111,7 @@ const advanceLevel = async (currentUserSequence) => {
     document.getElementById("high-score").innerHTML = highScore;
 
     sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
-    playSequence();
+    await playSequence();
 }
 
 
@@ -126,26 +121,30 @@ const validateUserSequence = async (userSequence) => {
     const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
     try {
         // sending a POST request with data
-        const response = await axios.post(url, {sequence: userSequence});
+        const response = await axios.post(url, { sequence: userSequence });
         return response.data.gameState
-    } catch (error) { // if user inputs wrong sequence
-        document.getElementById("failure-modal").style.display = "flex";
-        isKeyboardEnabled = false;
+    } catch (error) {
+
+        if (error.response.status === 400) {
+            // if user inputs wrong sequence
+            document.getElementById("failure-modal").style.display = "flex";
+        } else {
+            // other error
+            console.log("error validating user input", error);
+        };
     };
 }
 
 
 // play generated pad sequence
 const playSequence = async () => {
-    isSequencePlaying = true;
-    document.getElementById("replay-btn").disabled = true; // right when sequence starts playing
+    disableActivity();          
     // create an array of pad's sequence
     const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
-            setTimeout(async () => {                
-                await new Promise(r => setTimeout(r, 1800)); // delay before highliting   
-                disableActivity(); // whilst sequence is playing (code is here, otherwise it interfers with the user's last padPress)
- 
+            setTimeout(async () => {      
+                 // delay highliting   
+                await new Promise(r => setTimeout(r, 1800));
                 // highlight pad
                 const pad = document.getElementById(padId);
                 pad.classList.add("clickKey");
@@ -159,7 +158,6 @@ const playSequence = async () => {
     );
     // wait for sequence to complete
     await Promise.all(padPromises);
-    isSequencePlaying = false;
     // reset for next lvl
     enableActivity();
     document.getElementById("start-btn").disabled = true;
@@ -167,21 +165,24 @@ const playSequence = async () => {
 
 
 // play tune when pressed and animate pad
-document.addEventListener("keyup", (e) => {
-    if (! isKeyboardEnabled || isSequencePlaying) {return};
-    padId = keyToPad[e.key];
+document.addEventListener("keyup", async (e) => {
+    if (! isKeyboardEnabled) {return};
+    let padId = keyToPad[e.key];
     if (padId) {
-        pressPad(padId);
+        await pressPad(padId);
         document.getElementById(padId).classList.remove("clickKey");
     };
 });
 // turns pad back to original look
 document.addEventListener("keydown", (e) => {
-    if (! isKeyboardEnabled || isSequencePlaying) {return};
+    if (! isKeyboardEnabled) {return};
     if (keyToPad[e.key]) {
         document.getElementById(keyToPad[e.key]).classList.add("clickKey");
     };
 });
 
 
-resetGame()
+// reset game when screen is loaded/reloaded
+window.onload = () => {
+    resetGame()
+}
