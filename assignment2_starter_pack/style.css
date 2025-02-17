@@ -20,10 +20,7 @@ body {
   font-size: 2.5vw;
 }
 
-.no-interaction #sound-select-disabled { /* pad keeps original look*/
-  filter: none !important;
-  transform: none !important;
-  transition: none !important;
+.disabled { /* disable sound-select */
   pointer-events: none;
 }
 

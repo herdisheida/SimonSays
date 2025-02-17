@@ -22,10 +22,7 @@ let highScore;
 let isKeyboardEnabled = false;
 let isSequencePlaying = false;
 
-
 let synth = new Tone.Synth().toDestination();
-
-
 
 
 
@@ -41,13 +38,11 @@ const resetGame = async () => {
     // display game info
     document.getElementById("level-indicator").innerHTML = level;
     document.getElementById("high-score").innerHTML = highScore;
-
     // set game into idle-state
     disableButtons();
     document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
 }
-
 
 // get gameState from backend by perfoming a PUT request
 const putGameState = async () => {
@@ -59,28 +54,31 @@ const putGameState = async () => {
       console.log(error); // when unsuccessful, print the error.
     };
 }
-
   
 // all buttons are enabled and the start-btn is disabled
-const startGame = (e) => {
+const startGame = () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
     playSequence();
 }
 
+
 const disableButtons = () => {
     document.querySelectorAll("button").forEach(button => {button.disabled = true});
     isKeyboardEnabled = false;
+    document.getElementById("sound-select").classList.add('disabled'); // DELETE not use case
+
 }
 const enableButtons = () => {
-    document.querySelectorAll("button").forEach(button => {button.disabled = false});
+    document.querySelectorAll("button").forEach(button => {button.disabled = false});  // DELETE not use case
     isKeyboardEnabled = true;
+    document.getElementById("sound-select").classList.remove('disabled');
 }
 
 
 // pad press function
 const pressPad = (padId) => {
-    if (isSequencePlaying) {return};
+    if (isSequencePlaying) {return}; // cannot press pad if sequence is playing
     playSound(padId);
     userSequence.push(padId);
     if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
@@ -98,12 +96,12 @@ const playSound = (padId) => {
     synth.triggerAttackRelease(note,"5n", Tone.now());
 }
 
+
 // check if userSequence is valid (the same as the computer generated sequence)
 const advanceLevel = async (currentUserSequence) => {
-    userInput = currentUserSequence.map(padId => padId.replace(/pad-/, "")) // turn padId into colors
-    const gameState = await validateUserSequence(userInput)
-    
+    userInput = currentUserSequence.map(padId => padId.replace(/pad-/, "")) // turn padId into colors    
     // get gameState info
+    const gameState = await validateUserSequence(userInput)
     level = gameState.level
     highScore = gameState.highScore
     // update info
@@ -117,6 +115,7 @@ const advanceLevel = async (currentUserSequence) => {
     sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
     playSequence();
 }
+
 
 // check if user from backend by perfoming a PUT request
 const validateUserSequence = async (userSequence) => {
@@ -133,11 +132,11 @@ const validateUserSequence = async (userSequence) => {
     };
 }
 
+
 // play generated pad sequence
 const playSequence = async () => {
     isSequencePlaying = true;
-    disableButtons(); // DELETE ekki í use case
-    // create an array of pad's animations
+    // create an array of pad's sequence
     const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
             setTimeout(async () => {
@@ -145,6 +144,7 @@ const playSequence = async () => {
                 const pad = document.getElementById(padId);
                 
                 await new Promise(r => setTimeout(r, 2000)); // delay before highliting
+                disableButtons(); // DELETE ekki í use case
                 pad.classList.add("clickKey"); // highlight pad
                 playSound(padId)
                 await new Promise(r => setTimeout(r, 350)); // highlight duration
@@ -171,7 +171,6 @@ document.addEventListener("keyup", (e) => {
         document.getElementById(padId).classList.remove("clickKey");
     };
 });
-
 // turns pad back to original look
 document.addEventListener("keydown", (e) => {
     if (! isKeyboardEnabled || isSequencePlaying) {return};
@@ -181,12 +180,4 @@ document.addEventListener("keydown", (e) => {
 });
 
 
-// disable clicking buttons or pads, whilst the sequence is playing/replaying
-// document.addEventListener("click", async (e) => {
-//     if (isSequencePlaying) {
-//         e.target.disabled = true;
-//     }
-// }); // TODO --- ekki hægt að ýta á meðan sequence is plahing
-
-
-resetGame() // TODO --- fix this look -- contact the backend stuff
+resetGame() // TODO --- fix this ... looks stupid...
