@@ -15,18 +15,18 @@ const noteForPads = {
 
 // TODO: vtk hvort ég ætli að initaliza þetta hér..
 let sequence;
-let userSequence = []
-let level; // initalized at 1
+let userSequence = [];
+let level;
 let highScore;
 
 let isKeyboardEnabled = false;
 let isSequencePlaying = false;
 
-let synth;
+let synth = new Tone.Synth().toDestination();    
 
 
 
-// idle-state, all buttans except the start-btn are disabled
+// idle-state: all buttans except the start-btn are disabled, get info from backend for the "reset"
 const resetGame = async () => {
     // get and set game info
     const gameState = await putGameState()
@@ -39,7 +39,7 @@ const resetGame = async () => {
     document.getElementById("level-indicator").innerHTML = level;
     document.getElementById("high-score").innerHTML = highScore;
     // set game into idle-state
-    disableButtons();
+    disableActivity();
     document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
 }
@@ -55,36 +55,37 @@ const putGameState = async () => {
     };
 }
   
-// all buttons are enabled and the start-btn is disabled
-const startGame = async () => {
-    enableButtons();
+// initalizes the start of the game, all buttons are enabled and the start-btn is disabled
+const startGame = () => {
+    enableActivity();
     document.getElementById("start-btn").disabled = true;
     playSequence();
-
-    await Tone.start(); // initialize audio synth
-    synth = new Tone.Synth().toDestination();    
 }
 
 
-const disableButtons = () => {
+const disableActivity = () => {
     document.querySelectorAll("button").forEach(button => {button.disabled = true});
     isKeyboardEnabled = false;
-    document.getElementById("sound-select").classList.add('disabled'); // DELETE not use case
-
+    document.getElementById("sound-select").classList.add('disabled');
 }
-const enableButtons = () => {
-    document.querySelectorAll("button").forEach(button => {button.disabled = false});  // DELETE not use case
+const enableActivity = () => {
+    document.querySelectorAll("button").forEach(button => {button.disabled = false});
     isKeyboardEnabled = true;
     document.getElementById("sound-select").classList.remove('disabled');
 }
 
 
 // pad press function
-const pressPad = (padId) => {
+const pressPad = async (padId) => {
     if (isSequencePlaying) {return}; // cannot press pad if sequence is playing
     playSound(padId);
+
     userSequence.push(padId);
+    // disable replay-btn when user has started pressing color-pads
+    if (userSequence.length > 0) {document.getElementById("replay-btn").disabled = true}
+    // validate userInput
     if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
+
 }
 
 // plays sound for each pad press (as well when the sequence is playing)
@@ -95,7 +96,7 @@ const playSound = (padId) => {
     synth.oscillator.type = selectedSound
     // get corresponding note for pad
     note = noteForPads[padId];
-    
+    // make sound
     synth.triggerAttackRelease(note,"5n", Tone.now());
 }
 
@@ -110,7 +111,7 @@ const advanceLevel = async (currentUserSequence) => {
     // update info
     if ((level - 1) > highScore) {highScore = level - 1};
     userSequence = []  // reset for next lvl
-
+    document.getElementById("replay-btn").disabled = true // enable replay-btn for next lvl
     // show updated info
     document.getElementById("level-indicator").innerHTML = level;
     document.getElementById("high-score").innerHTML = highScore;
@@ -120,16 +121,15 @@ const advanceLevel = async (currentUserSequence) => {
 }
 
 
-// check if user from backend by perfoming a PUT request
+// check if userSequence is correct using backend by perfoming a PUT request
 const validateUserSequence = async (userSequence) => {
     // format userSequence for POST request
     const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
     try {
-        const response = await axios.post(url, { sequence: userSequence }); // Sending a POST request with data
+        // sending a POST request with data
+        const response = await axios.post(url, {sequence: userSequence});
         return response.data.gameState
-    } catch (error) {
-        // HELP TA --- á ég að setja failure hérna ? því +eg fæ alltaf error þegar ég geri rangt seqeuence
-        // HELP þýðir error 400 --- usererror not server error ?
+    } catch (error) { // if user inputs wrong sequence
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
     };
@@ -139,29 +139,31 @@ const validateUserSequence = async (userSequence) => {
 // play generated pad sequence
 const playSequence = async () => {
     isSequencePlaying = true;
+    document.getElementById("replay-btn").disabled = true; // right when sequence starts playing
     // create an array of pad's sequence
     const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
-            setTimeout(async () => {
-                // get pad info
+            setTimeout(async () => {                
+                await new Promise(r => setTimeout(r, 1800)); // delay before highliting   
+                disableActivity(); // whilst sequence is playing (code is here, otherwise it interfers with the user's last padPress)
+ 
+                // highlight pad
                 const pad = document.getElementById(padId);
-                
-                await new Promise(r => setTimeout(r, 2000)); // delay before highliting
-                disableButtons(); // DELETE ekki í use case
-                pad.classList.add("clickKey"); // highlight pad
+                pad.classList.add("clickKey");
                 playSound(padId)
                 await new Promise(r => setTimeout(r, 350)); // highlight duration
-                pad.classList.remove("clickKey"); // remove highlight
+                pad.classList.remove("clickKey");
         
                 resolve(); // mark the pad's animation as finished
-            }, index * 900); // start each pad animation with 1sec interval
+            }, index * 900); // 900ms interval between each pad highlight
         })
     );
     // wait for sequence to complete
     await Promise.all(padPromises);
     isSequencePlaying = false;
-    enableButtons(); // DELETE ekki í use case
-    document.getElementById("start-btn").disabled = true; // DELETE ekki í use case
+    // reset for next lvl
+    enableActivity();
+    document.getElementById("start-btn").disabled = true;
 };
 
 
@@ -183,4 +185,4 @@ document.addEventListener("keydown", (e) => {
 });
 
 
-resetGame() // TODO --- fix this ... looks stupid...
+resetGame() // HELP --- á þetta bara að vera hér? ... looks stupid...

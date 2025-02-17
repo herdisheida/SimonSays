@@ -20,7 +20,7 @@ body {
   font-size: 2.5vw;
 }
 
-.disabled { /* disable sound-select */
+.disabled { /* disable sound-select event -- cannot interact with dropdown menu */
   pointer-events: none;
 }
 
