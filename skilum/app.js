@@ -148,9 +148,9 @@ const validateUserSequence = async (userSequence) => {
 
 // play generated pad sequence
 const playSequence = async () => {
+    document.getElementById("replay-btn").disabled = true; // disable replay-btn right away (avoid spamming)
     await new Promise((r) => setTimeout(r, 1600));
     disableActivity(); // user can't interact with UI whilst sequence is playing
-    // create an array of pad's sequence
     const padPromises = sequence.map(
         (padId, index) =>
             new Promise((resolve) => {
@@ -165,15 +165,12 @@ const playSequence = async () => {
             }, index * 900); // 900ms interval between each pad highlight
         })
     );
-    
     // wait for sequence to complete
     await Promise.all(padPromises);
     // reset for next lvl
     enableActivity();
     document.getElementById("start-btn").disabled = true;
 };
-
-const delay = (ms) => new Promise((r) => setTimeout(r, ms)); // delay by milliseconds
 
 // play tune when pressed and animate pad
 document.addEventListener("keyup", async (e) => {
