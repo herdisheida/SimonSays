@@ -19,7 +19,9 @@ let userSequence = [];
 let level;
 let highScore;
 
-let synth = new Tone.Synth().toDestination();    
+let synth = new Tone.Synth().toDestination();  
+const soundSelector = document.getElementById("sound-select");
+
 
 
 
@@ -61,14 +63,14 @@ const startGame = async() => {
 
 
 const disableActivity = () => {
-    document.querySelectorAll("button").forEach(button => {button.disabled = true});
-    isKeyboardEnabled = false;
+    document.querySelectorAll(".pad, #replay-btn").forEach(button => {button.disabled = true});
     document.getElementById("sound-select").style.pointerEvents = "none";
+    isKeyboardEnabled = false;
 };
 const enableActivity = () => {
-    document.querySelectorAll("button").forEach(button => {button.disabled = false});
-    isKeyboardEnabled = true;
+    document.querySelectorAll(".pad, #replay-btn").forEach(button => {button.disabled = false});
     document.getElementById("sound-select").style.pointerEvents = "auto";
+    isKeyboardEnabled = true;
 }
 
 
@@ -84,10 +86,8 @@ const pressPad = async (padId) => {
 
 // plays sound for each pad press (as well when the sequence is playing)
 const playSound = (padId) => {
-    // get and change sound selector
-    const sounds = document.getElementById("sound-select");
-    const selectedSound = sounds.value;
-    synth.oscillator.type = selectedSound
+    // get sound type
+    synth.oscillator.type = soundSelector.value
     // get corresponding note for pad
     let note = noteForPads[padId];
     // make sound
