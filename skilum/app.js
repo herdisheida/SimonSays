@@ -13,7 +13,6 @@ const noteForPads = {
 }
 
 
-// TODO: vtk hvort ég ætli að initaliza þetta hér..
 let sequence;
 let userSequence = [];
 let level;
