@@ -22,7 +22,7 @@ let highScore;
 let isKeyboardEnabled = false;
 let isSequencePlaying = false;
 
-let synth = new Tone.Synth().toDestination();
+let synth;
 
 
 
@@ -56,10 +56,13 @@ const putGameState = async () => {
 }
   
 // all buttons are enabled and the start-btn is disabled
-const startGame = () => {
+const startGame = async () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
     playSequence();
+
+    await Tone.start(); // initialize audio synth
+    synth = new Tone.Synth().toDestination();    
 }
 
 
