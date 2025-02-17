@@ -35,8 +35,8 @@ const resetGame = async () => {
     userSequence = [];
 
     // display game info
-    document.getElementById("level-indicator").innerHTML = level;
-    document.getElementById("high-score").innerHTML = highScore;
+    document.getElementById("level-indicator").textContent = level;
+    document.getElementById("high-score").textContent = highScore;
     // set game into idle-state
     disableActivity();
     document.getElementById("failure-modal").style.display = "none";
@@ -107,8 +107,8 @@ const advanceLevel = async (currentUserSequence) => {
     userSequence = []  // reset for next lvl
     document.getElementById("replay-btn").disabled = true // enable replay-btn for next lvl
     // show updated info
-    document.getElementById("level-indicator").innerHTML = level;
-    document.getElementById("high-score").innerHTML = highScore;
+    document.getElementById("level-indicator").textContent = level;
+    document.getElementById("high-score").textContent = highScore;
 
     sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
     await playSequence();
