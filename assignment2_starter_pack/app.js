@@ -1,8 +1,3 @@
-// window.localstorage ----- til að geyma high score
-// HELP: TA --- eiga padSequence að breytast í hverju lvl, ég hélt að runan ætti að vera nákæmlega eins nema bæta einnum pad við??
-
-
-
 // give each pad a unique keyboard key
 const keyToPad = {
     q: "pad-red",
@@ -10,162 +5,164 @@ const keyToPad = {
     a: "pad-green",
     s: "pad-blue"
 };
-const toneForPads = {
-    "pad-red": "c4",
-    "pad-yellow": "e4",
-    "pad-green": "d4",
-    "pad-blue": "f4"
+const noteForPads = {
+    "pad-red": "C4",
+    "pad-yellow": "D4",
+    "pad-green": "E4",
+    "pad-blue": "F4"
 }
 
 
+// TODO: vtk hvort ég ætli að initaliza þetta hér..
+let sequence;
+let userSequence = []
+let level; // initalized at 1
+let highScore;
 
-let padSequence = [] // TODO: vtk hvort ég ætli að initaliza þetta hér..
-let level = 1; // initalized at 1
-let highScore = 0;
-
-let userPadPressCount = 0 // for each lvl
-let isKeyboardEnabled = false
+let isKeyboardEnabled = false;
 let isSequencePlaying = false;
 
-// const synth = new Tone.Synth().toDestination(); // BUG
-
-
+let synth;
 
 
 
 // idle-state, all buttans except the start-btn are disabled
+const resetGame = async () => {
+    // get and set game info
+    const gameState = await putGameState()
+    highScore = gameState.highScore
+    level = gameState.level
+    sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
+    userSequence = []
 
-// HELP ÁRIÐANDI -- contact the backend here ??
-//  HELP reset by contacting the backend
-//  HELP retrieve the highscore
-const resetGame = () => {
-
-    padSequence = [];
-    level = 1; // initalized at 1
+    // display game info
     document.getElementById("level-indicator").innerHTML = level;
-
-
-    highScore = window.localStorage.getItem(key); // HELP: á þetta að vera BACKEND?
     document.getElementById("high-score").innerHTML = highScore;
-
-
-    
-    userPadPressCount = 0
-
+    // set game into idle-state
     disableButtons();
     document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
-    console.log("Game reset to idle state"); // DELETE console
-
 }
 
+// get gameState from backend by perfoming a PUT request
+const putGameState = async () => {
+    const url = "http://localhost:3000/api/v1/game-state"; // the URL for the request
+    try {
+      const response = await axios.put(url);
+      return response.data.gameState; // when successful, extract data
+    } catch (error) {
+      console.log(error); // when unsuccessful, print the error.
+    };
+}
+  
 // all buttons are enabled and the start-btn is disabled
-const startGame = () => {
+const startGame = async () => {
     enableButtons();
     document.getElementById("start-btn").disabled = true;
-    addToSequence();
     playSequence();
 
-    console.log("game has started") // DELETE
-    // synth = new Tone.Synth().toDestination();  // TEST
-
+    await Tone.start(); // initialize audio synth
+    synth = new Tone.Synth().toDestination();    
 }
+
 
 const disableButtons = () => {
-    const allButtons = document.querySelectorAll("button");
-    allButtons.forEach(button => {button.disabled = true});
+    document.querySelectorAll("button").forEach(button => {button.disabled = true});
+    isKeyboardEnabled = false;
+    document.getElementById("sound-select").classList.add('disabled'); // DELETE not use case
+
 }
 const enableButtons = () => {
-    const allButtons = document.querySelectorAll("button");
-    allButtons.forEach(button => {button.disabled = false});
+    document.querySelectorAll("button").forEach(button => {button.disabled = false});  // DELETE not use case
     isKeyboardEnabled = true;
-
+    document.getElementById("sound-select").classList.remove('disabled');
 }
 
 
 // pad press function
 const pressPad = (padId) => {
-    if (isSequencePlaying) {return};
-
-    console.log(padId + " was pressed"); // DELETE
-    userPadPressCount++;
-    playTone(padId);
-
-    checkMatch(padId, userPadPressCount); // check if pad press was correct
+    if (isSequencePlaying) {return}; // cannot press pad if sequence is playing
+    playSound(padId);
+    userSequence.push(padId);
+    if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
 }
 
-const playTone = (padId) => {
+// plays sound for each pad press (as well when the sequence is playing)
+const playSound = (padId) => {
+    // get and change sound selector
     const sounds = document.getElementById("sound-select");
-    const selectedSound = sounds.value; // "sine" |"square" | "triangle"
-
-    // // PLAY THE SOUND
-    // note = toneForPads[padId];
-    // synth.triggerAttackRelease(note,"8n", Tone.now());
-    // TODO
+    const selectedSound = sounds.value;
+    synth.oscillator.type = selectedSound
+    // get corresponding note for pad
+    note = noteForPads[padId];
+    
+    synth.triggerAttackRelease(note,"5n", Tone.now());
 }
 
-// check if userInpust is the same as padSequence (continnue game if True else game over)
-// HELP ÁRIÐANDI -- contact the backend here ??
-const checkMatch = (padId, userPadPressCount) => {
-    if (padSequence[userPadPressCount - 1] != padId) { // if the pad pressed is incorrect
+
+// check if userSequence is valid (the same as the computer generated sequence)
+const advanceLevel = async (currentUserSequence) => {
+    userInput = currentUserSequence.map(padId => padId.replace(/pad-/, "")) // turn padId into colors    
+    // get gameState info
+    const gameState = await validateUserSequence(userInput)
+    level = gameState.level
+    highScore = gameState.highScore
+    // update info
+    if ((level - 1) > highScore) {highScore = level - 1};
+    userSequence = []  // reset for next lvl
+
+    // show updated info
+    document.getElementById("level-indicator").innerHTML = level;
+    document.getElementById("high-score").innerHTML = highScore;
+
+    sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
+    playSequence();
+}
+
+
+// check if user from backend by perfoming a PUT request
+const validateUserSequence = async (userSequence) => {
+    // format userSequence for POST request
+    const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
+    try {
+        const response = await axios.post(url, { sequence: userSequence }); // Sending a POST request with data
+        return response.data.gameState
+    } catch (error) {
+        // HELP TA --- á ég að setja failure hérna ? því +eg fæ alltaf error þegar ég geri rangt seqeuence
+        // HELP þýðir error 400 --- usererror not server error ?
         document.getElementById("failure-modal").style.display = "flex";
         isKeyboardEnabled = false;
-    } else if (padSequence.length === userPadPressCount) {
-        advanceLevel();
-        addToSequence();
-        playSequence();
-    }
-}
-
-// make sequence longer if player presses right pads
-const advanceLevel = () => {
-        // update level-indicator
-        level++;
-        document.getElementById("level-indicator").innerHTML = level;
-        // update high-score if necessary
-        if (level > highScore) {
-            highScore = level;
-            document.getElementById("high-score").innerHTML = highScore;
-            window.localStorage.setItem("high-score", highScore) // save highscore in backend
-        };
     };
-
-const addToSequence = () => {
-    padSequence.push(getRandomPad());
-    userPadPressCount = 0; // reset for next level
 }
 
 
 // play generated pad sequence
 const playSequence = async () => {
     isSequencePlaying = true;
-    // create an array of pad's animations
-    const padPromises = padSequence.map((padId, index) => 
+    // create an array of pad's sequence
+    const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
             setTimeout(async () => {
+                // get pad info
                 const pad = document.getElementById(padId);
-
-                await new Promise(r => setTimeout(r, 800)); // delay before highliting
+                
+                await new Promise(r => setTimeout(r, 2000)); // delay before highliting
+                disableButtons(); // DELETE ekki í use case
                 pad.classList.add("clickKey"); // highlight pad
-                await new Promise(r => setTimeout(r, 500)); // highlight duration
+                playSound(padId)
+                await new Promise(r => setTimeout(r, 350)); // highlight duration
                 pad.classList.remove("clickKey"); // remove highlight
         
                 resolve(); // mark the pad's animation as finished
-            }, index * 1000); // start each pad animation with 1sec interval
+            }, index * 900); // start each pad animation with 1sec interval
         })
     );
-    // wait for padSequence to complete
+    // wait for sequence to complete
     await Promise.all(padPromises);
     isSequencePlaying = false;
-    console.log("Sequence complete!"); // DELETE
+    enableButtons(); // DELETE ekki í use case
+    document.getElementById("start-btn").disabled = true; // DELETE ekki í use case
 };
-
-// generate and return random pad to add to the sequence
-const getRandomPad = () => {
-    const padValues = Object.values(keyToPad); // get values from object
-    let i = Math.floor(Math.random() * padValues.length); // randomize index
-    return padValues[i]; // return a random pad
-}
 
 
 // play tune when pressed and animate pad
@@ -177,7 +174,6 @@ document.addEventListener("keyup", (e) => {
         document.getElementById(padId).classList.remove("clickKey");
     };
 });
-
 // turns pad back to original look
 document.addEventListener("keydown", (e) => {
     if (! isKeyboardEnabled || isSequencePlaying) {return};
@@ -187,4 +183,4 @@ document.addEventListener("keydown", (e) => {
 });
 
 
-resetGame() // TODO --- fix this look -- contact the backend stuff
+resetGame() // TODO --- fix this ... looks stupid...
