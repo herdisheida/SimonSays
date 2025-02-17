@@ -20,10 +20,6 @@ body {
   font-size: 2.5vw;
 }
 
-.disabled { /* disable sound-select event -- cannot interact with dropdown menu */
-  pointer-events: none;
-}
-
 .pad:enabled:active, .clickKey {
   filter: brightness(0.5);
   transform: scale(1.1);

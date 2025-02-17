@@ -4,7 +4,7 @@ const keyToPad = {
     w: "pad-yellow",
     a: "pad-green",
     s: "pad-blue"
-};
+}
 const noteForPads = {
     "pad-red": "C4",
     "pad-yellow": "D4",
@@ -29,11 +29,11 @@ let synth = new Tone.Synth().toDestination();
 // idle-state: all buttans except the start-btn are disabled, get info from backend for the "reset"
 const resetGame = async () => {
     // get and set game info
-    const gameState = await putGameState()
-    highScore = gameState.highScore
-    level = gameState.level
-    sequence = gameState.sequence.map(color => {return "pad-" + color}) // set elem in array to padIds
-    userSequence = []
+    const gameState = await putGameState();
+    highScore = gameState.highScore;
+    level = gameState.level;
+    sequence = gameState.sequence.map(color => {return "pad-" + color}); // set elem in array to padIds
+    userSequence = [];
 
     // display game info
     document.getElementById("level-indicator").innerHTML = level;
@@ -66,12 +66,12 @@ const startGame = () => {
 const disableActivity = () => {
     document.querySelectorAll("button").forEach(button => {button.disabled = true});
     isKeyboardEnabled = false;
-    document.getElementById("sound-select").classList.add('disabled');
-}
+    document.getElementById("sound-select").style.pointerEvents = none;
+};
 const enableActivity = () => {
     document.querySelectorAll("button").forEach(button => {button.disabled = false});
     isKeyboardEnabled = true;
-    document.getElementById("sound-select").classList.remove('disabled');
+    document.getElementById("sound-select").style.pointerEvents = auto;
 }
 
 
@@ -82,10 +82,9 @@ const pressPad = async (padId) => {
 
     userSequence.push(padId);
     // disable replay-btn when user has started pressing color-pads
-    if (userSequence.length > 0) {document.getElementById("replay-btn").disabled = true}
+    if (userSequence.length > 0) {document.getElementById("replay-btn").disabled = true};
     // validate userInput
     if (sequence.length === userSequence.length) {advanceLevel(userSequence)};
-
 }
 
 // plays sound for each pad press (as well when the sequence is playing)
