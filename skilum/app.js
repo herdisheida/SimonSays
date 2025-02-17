@@ -185,4 +185,4 @@ document.addEventListener("keydown", (e) => {
 });
 
 
-resetGame() // HELP --- á þetta bara að vera hér? ... looks stupid...
+resetGame()
