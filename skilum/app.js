@@ -27,7 +27,7 @@ const soundSelector = document.getElementById("sound-select");
 // idle-state: all buttans except the start-btn are disabled, get info from backend for the "reset"
 const resetGame = async () => {
     // get and set game info
-    const gameState = await putGameState();
+    const gameState = await getGameState();
     highScore = gameState.highScore;
     level = gameState.level;
     sequence = gameState.sequence.map(color => {return "pad-" + color}); // set elem in array to padIds
@@ -43,7 +43,7 @@ const resetGame = async () => {
 }
 
 // get gameState from backend by perfoming a PUT request
-const putGameState = async () => {
+const getGameState = async () => {
     const url = "http://localhost:3000/api/v1/game-state"; // the URL for the request
     try {
       const response = await axios.put(url);
