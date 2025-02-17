@@ -90,7 +90,7 @@ const playSound = (padId) => {
     // get corresponding note for pad
     let note = noteForPads[padId];
     // make sound
-    synth.triggerAttackRelease(note,"5n", Tone.now());
+    synth.triggerAttackRelease(note,"8n", Tone.now());
 }
 
 
@@ -123,7 +123,6 @@ const validateUserSequence = async (userSequence) => {
         const response = await axios.post(url, { sequence: userSequence });
         return response.data.gameState
     } catch (error) {
-
         if (error.response.status === 400) {
             // if user inputs wrong sequence
             document.getElementById("failure-modal").style.display = "flex";
@@ -137,21 +136,19 @@ const validateUserSequence = async (userSequence) => {
 
 // play generated pad sequence
 const playSequence = async () => {
-    disableActivity();          
+    await new Promise(r => setTimeout(r, 1600));
+    disableActivity(); // user can't interact with UI whilst sequence is playing
     // create an array of pad's sequence
     const padPromises = sequence.map((padId, index) => 
         new Promise((resolve) => {
             setTimeout(async () => {      
-                 // delay highliting   
-                await new Promise(r => setTimeout(r, 1800));
                 // highlight pad
                 const pad = document.getElementById(padId);
                 pad.classList.add("clickKey");
                 playSound(padId)
                 await new Promise(r => setTimeout(r, 350)); // highlight duration
                 pad.classList.remove("clickKey");
-        
-                resolve(); // mark the pad's animation as finished
+                resolve(); // mark the highlight as finished
             }, index * 900); // 900ms interval between each pad highlight
         })
     );
@@ -161,6 +158,9 @@ const playSequence = async () => {
     enableActivity();
     document.getElementById("start-btn").disabled = true;
 };
+
+const delay = ms => new Promise(r => setTimeout(r, ms)); // delay by milliseconds
+
 
 
 // play tune when pressed and animate pad
