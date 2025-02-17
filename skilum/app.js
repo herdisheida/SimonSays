@@ -16,6 +16,7 @@ const noteForPads = Object.freeze({
 let sequence;
 let userSequence = [];
 let level;
+let isKeyboardEnabled = false;
 
 let synth = new Tone.Synth().toDestination();  
 const soundSelector = document.getElementById("sound-select");
