@@ -141,7 +141,7 @@ const validateUserSequence = async (userSequence) => {
             document.getElementById("failure-modal").style.display = "flex";
         } else {
             // request error
-            console.log("error validating user input", error);
+            console.log("Error validating user input", error);
         }
     }
 };
