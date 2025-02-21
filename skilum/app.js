@@ -12,6 +12,7 @@ const noteForPads = Object.freeze({
     "pad-blue": "F4",
 });
 
+// game variables
 let sequence;
 let userSequence = [];
 let level;
@@ -45,12 +46,12 @@ const resetGame = async () => {
 
 // get gameState from backend by perfoming a PUT request
 const getGameState = async () => {
-    const url = "http://localhost:3000/api/v1/game-state"; // the URL for the request
+    const URL = "http://localhost:3000/api/v1/game-state"; // the URL for the request
     try {
-        const response = await axios.put(url);
+        const response = await axios.put(URL);
         return response.data.gameState; // when successful, extract data
     } catch (error) {
-        console.log("error fetching gameState", error);
+        console.log("Error when fetching gameState", error);
     }
 };
 
@@ -129,11 +130,10 @@ const advanceLevel = async (currentUserSequence) => {
 
 // check if userSequence is correct using backend by perfoming a PUT request
 const validateUserSequence = async (userSequence) => {
-    // format userSequence for POST request
-    const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
+    const URL = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
     try {
         // sending a POST request with data
-        const response = await axios.post(url, { sequence: userSequence });
+        const response = await axios.post(URL, { sequence: userSequence });
         return response.data.gameState;
     } catch (error) {
         if (error.response.status === 400) {
