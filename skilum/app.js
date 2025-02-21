@@ -21,7 +21,6 @@ let isKeyboardEnabled = false;
 let isBlocked = false; // blocks user presspad input (not keyboard input)
 
 let synth = new Tone.Synth().toDestination();
-const soundSelector = document.getElementById("sound-select");
 
 // set game into idle-state and get reset gameState
 const resetGame = async () => {
@@ -100,8 +99,10 @@ const pressPad = async (padId) => {
 
 // plays sound for each pad press (as well when the sequence is playing)
 const playSound = (padId) => {
-    // get sound type and corresponding note for pad
+    // get sound type
+    const soundSelector = document.getElementById("sound-select");
     synth.oscillator.type = soundSelector.value;
+    // get tone for corrasponding pad
     let note = noteForPads[padId];
     synth.triggerAttackRelease(note, "8n", Tone.now());
 };
