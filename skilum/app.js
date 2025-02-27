@@ -24,6 +24,11 @@ let synth = new Tone.Synth().toDestination();
 
 // set game into idle-state and get reset gameState
 const resetGame = async () => {
+    // set game into idle-state
+    disableActivity();
+    document.getElementById("failure-modal").style.display = "none";
+    document.getElementById("start-btn").disabled = false;
+    
     // get and set game info
     const gameState = await getGameState();
     highScore = gameState.highScore;
@@ -37,17 +42,13 @@ const resetGame = async () => {
     // display game info
     document.getElementById("level-indicator").textContent = level;
     document.getElementById("high-score").textContent = highScore;
-    // set game into idle-state
-    disableActivity();
-    document.getElementById("failure-modal").style.display = "none";
-    document.getElementById("start-btn").disabled = false;
 };
 
 // get gameState from backend by perfoming a PUT request
 const getGameState = async () => {
-    const URL = "http://localhost:3000/api/v1/game-state"; // the URL for the request
+    const url = "http://localhost:3000/api/v1/game-state"; // the URL for the request
     try {
-        const response = await axios.put(URL);
+        const response = await axios.put(url);
         return response.data.gameState; // when successful, extract data
     } catch (error) {
         console.log("Error when fetching gameState", error);
@@ -131,10 +132,10 @@ const advanceLevel = async (currentUserSequence) => {
 
 // check if userSequence is correct using backend by perfoming a PUT request
 const validateUserSequence = async (userSequence) => {
-    const URL = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
+    const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
     try {
         // sending a POST request with data
-        const response = await axios.post(URL, { sequence: userSequence });
+        const response = await axios.post(url, { sequence: userSequence });
         return response.data.gameState;
     } catch (error) {
         if (error.response.status === 400) {
