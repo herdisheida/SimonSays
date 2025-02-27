@@ -159,10 +159,10 @@ const playSequence = async () => {
             setTimeout(async () => {
                 // highlight pad
                 const pad = document.getElementById(padId);
-                pad.classList.add("clickKey");
+                pad.classList.add("active");
                 playSound(padId);
                 await new Promise((r) => setTimeout(r, 350)); // highlight duration
-                pad.classList.remove("clickKey");
+                pad.classList.remove("active");
                 resolve(); // mark the highlight as finished
             }, index * 900); // 900ms interval between each pad highlight
         })
@@ -182,7 +182,7 @@ document.addEventListener("keyup", async (e) => {
     let padId = keyToPad[e.key];
     if (padId) {
         await pressPad(padId);
-        document.getElementById(padId).classList.remove("clickKey");
+        document.getElementById(padId).classList.remove("active");
     }
 });
 // turns pad back to original look
@@ -191,7 +191,7 @@ document.addEventListener("keydown", (e) => {
         return;
     }
     if (keyToPad[e.key]) {
-        document.getElementById(keyToPad[e.key]).classList.add("clickKey");
+        document.getElementById(keyToPad[e.key]).classList.add("active");
     }
 });
 
