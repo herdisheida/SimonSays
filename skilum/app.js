@@ -98,19 +98,16 @@ const playSound = (padId) => {
 // check if userSequence is valid (the same as the computer generated sequence)
 const advanceLevel = async (currentUserSequence) => {
     userInput = currentUserSequence.map((padId) => padId.replace(/pad-/, "")); // turn padId into colors
-    // get gameState info
     const gameState = await validateUserSequence(userInput);
+    if (!gameState) { return; }
+
     level = gameState.level;
     highScore = gameState.highScore;
-    // update info
     highScore = Math.max(highScore, level - 1);
     userSequence = []; // reset for next lvl
-    document.getElementById("replay-btn").disabled = true; // enable replay-btn for next lvl
-    updateUI({ level, highScore})
-
-        // set elements in array to padIds
     sequence = gameState.sequence.map((color) => { return "pad-" + color });
-    playSequence();
+    updateUI({ level, highScore})
+    await playSequence();
 };
 
 // check if userSequence is correct using backend by perfoming a PUT request
@@ -137,17 +134,16 @@ const playSequence = () => {
         // track when sequence finishes playing
         let totalDelay = 0;
         sequence.forEach((padId, index) => {
-            const padDelay = index * 900; // delay for each pad
+            const padDelay = index * 900; // ms between each pad highlight
             setTimeout(() => {
                 const pad = document.getElementById(padId);
                 // highlight pad
                 pad.classList.add("active");
                 playSound(padId);
-                // remove highlight after 350ms
+                // highlight duration is 350ms
                 setTimeout(() => { pad.classList.remove("active"); }, 350);
             }, padDelay);
-            // update total delay tracking
-            totalDelay = padDelay + 350;
+            totalDelay = padDelay + 350; // calculate total delay to know when to enable activity
         });
         
         // enable UI after sequence finishes playing
