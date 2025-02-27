@@ -27,20 +27,22 @@ const resetGame = async () => {
     document.getElementById("start-btn").disabled = false;
     
     // get and set game info
-    const gameState = await getGameState();
-    highScore = gameState.highScore;
-    level = gameState.level;
+    // const gameState = await getGameState();
+    // highScore = gameState.highScore;
+    // level = gameState.level;
         // set the elements in the array to padIds
-    sequence = gameState.sequence.map((color) => { return "pad-" + color; });
+
+    const { highScore, level, sequence: gameSequence } = await getGameState();
+    sequence = gameSequence.map((color) => { return "pad-" + color; });
+
     userSequence = [];
     updateUI({ level, highScore})
 };
 
 // get gameState from backend by perfoming a PUT request
 const getGameState = async () => {
-    const url = "http://localhost:3000/api/v1/game-state"; // the URL for the request
     try {
-        const response = await axios.put(url);
+        const response = await axios.put("http://localhost:3000/api/v1/game-state");
         return response.data.gameState; // when successful, extract data
     } catch (error) {
         console.log("Error when fetching gameState", error);
@@ -103,13 +105,12 @@ const advanceLevel = async (currentUserSequence) => {
 
 // check if userSequence is correct using backend by perfoming a PUT request
 const validateUserSequence = async (userSequence) => {
-    const url = "http://localhost:3000/api/v1/game-state/sequence"; // the URL for the request
     try {
-        // sending a POST request with data
-        const response = await axios.post(url, { sequence: userSequence });
+        const response = await axios.post("http://localhost:3000/api/v1/game-state/sequence", { sequence: userSequence });
         return response.data.gameState;
     } catch (error) {
         if (error.response.status === 400) { // user sequence is wrong
+            activityEnabled = false;
             document.getElementById("failure-modal").style.display = "flex";
         } else { // post error
             console.log("Error validating user input", error);
@@ -122,19 +123,20 @@ const playSequence = () => {
     setTimeout(() => {
         // track when sequence finishes playing
         let totalDelay = 0;
+
         sequence.forEach((padId, index) => {
             const padDelay = index * 900; // ms between each pad highlight
             setTimeout(() => {
-                const pad = document.getElementById(padId);
                 // highlight pad
+                const pad = document.getElementById(padId);
                 pad.classList.add("active");
                 playSound(padId);
+
                 // highlight duration is 350ms
                 setTimeout(() => { pad.classList.remove("active"); }, 350);
             }, padDelay);
             totalDelay = padDelay + 350; // calculate total delay to know when to enable activity
         });
-        
         // enable UI after sequence finishes playing
         setTimeout(() => {
             enableActivity();
@@ -146,10 +148,13 @@ const playSequence = () => {
 
 const highlightPad = async (padId) => {
     if (!activityEnabled) { return; }
-    document.getElementById(padId).classList.add("active");
+    const pad = document.getElementById(padId)
+    pad.classList.add("active");
     pressPad(padId)
-    await new Promise((r) => setTimeout(r, 350)); // highlight duration
-    document.getElementById(padId).classList.remove("active");
+
+    setTimeout(() => { // remove highlight after 350 ms
+        document.getElementById(padId).classList.remove("active");
+    }, 350)
 };
 
 
@@ -174,7 +179,6 @@ document.addEventListener("keydown", handleKeyDown)
 
 
 // helper functions
-const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const updateUI = ({ level, highScore }) => {
     document.getElementById("level-indicator").textContent = level;
     document.getElementById("high-score").textContent = highScore;
