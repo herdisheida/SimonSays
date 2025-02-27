@@ -12,16 +12,14 @@ const noteForPads = Object.freeze({
     "pad-blue": "F4",
 });
 
-// game variables
+// game state variables
 let sequence;
 let userSequence = [];
 let level;
-
 let activityEnabled = false;
-
 let synth = new Tone.Synth().toDestination();
 
-// set game into idle-state and get reset gameState
+// fetch initial game state and reset UI
 const resetGame = async () => {
     // set game into idle-state
     disableActivity();
@@ -32,10 +30,8 @@ const resetGame = async () => {
     const gameState = await getGameState();
     highScore = gameState.highScore;
     level = gameState.level;
-    sequence = gameState.sequence.map((color) => {
-        // set the colors in the array to padIds
-        return "pad-" + color;
-    });
+        // set the elements in the array to padIds
+    sequence = gameState.sequence.map((color) => { return "pad-" + color; });
     userSequence = [];
     
     // display game info
@@ -180,29 +176,33 @@ const highlightPad = async (padId) => {
 };
 
 
-// play tune when pressed and animate pad
-document.addEventListener("keyup", async (e) => {
-    if (!activityEnabled) {
-        return;
-    }
-    let padId = keyToPad[e.key];
+
+// keyboard controls
+const handleKeyUp = async (e) => {
+    if (!activityEnabled) { return; }
+    const padId = keyToPad[e.key];
     if (padId) {
         pressPad(padId);
         await document.getElementById(padId).classList.remove("active");
     }
-});
-// turns pad back to original look
-document.addEventListener("keydown", (e) => {
-    if (!activityEnabled) {
-        return;
-    }
-    if (keyToPad[e.key]) {
-        document.getElementById(keyToPad[e.key]).classList.add("active");
-    }
-});
+};
+const handleKeyDown = (e) => {
+    if (!activityEnabled) { return; }
+    const padId = keyToPad[e.key]
+    if (padId) { document.getElementById(padId).classList.add("active"); }
+};
+
+document.addEventListener("keyup", handleKeyUp)
+document.addEventListener("keydown", handleKeyDown)
 
 
-// reset game when screen is loaded/reloaded
+
+// helper functions
+const updateUI = ({ level, highScore }) => {
+    document.getElementById("level-indicator").textContent = level;
+    document.getElementById("high-score").textContent = highScore;
+};
+
 window.onload = () => {
     resetGame();
 };
