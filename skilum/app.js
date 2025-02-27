@@ -25,18 +25,11 @@ const resetGame = async () => {
     disableActivity();
     document.getElementById("failure-modal").style.display = "none";
     document.getElementById("start-btn").disabled = false;
-    
-    // get and set game info
-    // const gameState = await getGameState();
-    // highScore = gameState.highScore;
-    // level = gameState.level;
-        // set the elements in the array to padIds
-
     const { highScore, level, sequence: gameSequence } = await getGameState();
-    sequence = gameSequence.map((color) => { return "pad-" + color; });
-
+    sequence = gameSequence.map((color) => { return "pad-" + color });
+    
     userSequence = [];
-    updateUI({ level, highScore})
+    updateUI({ level, highScore });
 };
 
 // get gameState from backend by perfoming a PUT request
@@ -60,10 +53,11 @@ const disableActivity = () => { toggleActivity(false) };
 const enableActivity = () => { toggleActivity(true) };
 const toggleActivity = (enabled) => {
     document.querySelectorAll(".pad, #replay-btn").forEach((button) => { button.disabled = !enabled });
-    document.getElementById("sound-select").style.pointerEvents = enabled ? "auto" : "none";
+    document.getElementById("sound-select").style.pointerEvents = enabled? "auto" : "none";
     activityEnabled = enabled;
+    if (enabled) { document.addEventListener('keyup', handleKeyUp); }
+    else { document.removeEventListener('keyup', handleKeyUp) }
 };
-
 
 // pad press function
 const pressPad = async (padId) => {
@@ -71,14 +65,9 @@ const pressPad = async (padId) => {
     userSequence.push(padId);
     
     // user can't replay sequence after beginning (pressingPads) the level
-    if (userSequence.length > 0) {
-        document.getElementById("replay-btn").disabled = true;
-    }
-    // validate userInput
+    if (userSequence.length > 0) { document.getElementById("replay-btn").disabled = true; }
     if (sequence.length === userSequence.length) {
-        activityEnabled = false; // block user input whilst sequence is playing
-        advanceLevel(userSequence);
-        activityEnabled = true;
+        await advanceLevel(userSequence);
     }
 };
 
@@ -93,26 +82,31 @@ const advanceLevel = async (currentUserSequence) => {
     userInput = currentUserSequence.map((padId) => padId.replace(/pad-/, "")); // turn padId into colors
     const gameState = await validateUserSequence(userInput);
     if (!gameState) { return; }
-
+    
     level = gameState.level;
     highScore = gameState.highScore;
     highScore = Math.max(highScore, level - 1);
     userSequence = []; // reset for next lvl
     sequence = gameState.sequence.map((color) => { return "pad-" + color });
-    updateUI({ level, highScore})
+    updateUI({ level, highScore });
     await playSequence();
 };
 
 // check if userSequence is correct using backend by perfoming a PUT request
 const validateUserSequence = async (userSequence) => {
     try {
-        const response = await axios.post("http://localhost:3000/api/v1/game-state/sequence", { sequence: userSequence });
+        const response = await axios.post(
+            "http://localhost:3000/api/v1/game-state/sequence",
+            { sequence: userSequence }
+        );
         return response.data.gameState;
     } catch (error) {
-        if (error.response.status === 400) { // user sequence is wrong
+        if (error.response.status === 400) {
+            // user sequence is wrong
             activityEnabled = false;
             document.getElementById("failure-modal").style.display = "flex";
-        } else { // post error
+        } else {
+            // post error
             console.log("Error validating user input", error);
         }
     }
@@ -123,7 +117,7 @@ const playSequence = () => {
     setTimeout(() => {
         // track when sequence finishes playing
         let totalDelay = 0;
-
+        
         sequence.forEach((padId, index) => {
             const padDelay = index * 900; // ms between each pad highlight
             setTimeout(() => {
@@ -131,9 +125,9 @@ const playSequence = () => {
                 const pad = document.getElementById(padId);
                 pad.classList.add("active");
                 playSound(padId);
-
+                
                 // highlight duration is 350ms
-                setTimeout(() => { pad.classList.remove("active"); }, 350);
+                setTimeout(() => { pad.classList.remove("active") }, 350);
             }, padDelay);
             totalDelay = padDelay + 350; // calculate total delay to know when to enable activity
         });
@@ -145,19 +139,17 @@ const playSequence = () => {
     }, 1600); // initial 1600ms delay
 };
 
-
 const highlightPad = async (padId) => {
     if (!activityEnabled) { return; }
-    const pad = document.getElementById(padId)
+    const pad = document.getElementById(padId);
     pad.classList.add("active");
-    pressPad(padId)
-
-    setTimeout(() => { // remove highlight after 350 ms
+    pressPad(padId);
+    
+    setTimeout(() => {
+        // remove highlight after 350 ms
         document.getElementById(padId).classList.remove("active");
-    }, 350)
+    }, 350);
 };
-
-
 
 // keyboard controls
 const handleKeyUp = async (e) => {
@@ -170,20 +162,20 @@ const handleKeyUp = async (e) => {
 };
 const handleKeyDown = (e) => {
     if (!activityEnabled) { return; }
-    const padId = keyToPad[e.key]
-    if (padId) { document.getElementById(padId).classList.add("active"); }
+    const padId = keyToPad[e.key];
+    if (padId) {
+        document.getElementById(padId).classList.add("active");
+    }
 };
 
-document.addEventListener("keyup", handleKeyUp)
-document.addEventListener("keydown", handleKeyDown)
-
+document.addEventListener("keyup", handleKeyUp);
+document.addEventListener("keydown", handleKeyDown);
 
 // helper functions
 const updateUI = ({ level, highScore }) => {
     document.getElementById("level-indicator").textContent = level;
     document.getElementById("high-score").textContent = highScore;
 };
-
 
 window.onload = () => {
     resetGame();
