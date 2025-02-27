@@ -55,8 +55,12 @@ const toggleActivity = (enabled) => {
     document.querySelectorAll(".pad, #replay-btn").forEach((button) => { button.disabled = !enabled });
     document.getElementById("sound-select").style.pointerEvents = enabled? "auto" : "none";
     activityEnabled = enabled;
-    if (enabled) { document.addEventListener('keyup', handleKeyUp); }
-    else { document.removeEventListener('keyup', handleKeyUp) }
+
+    if (enabled) {
+        document.addEventListener('keyup', handleKeyUp);
+    } else {
+        document.removeEventListener('keyup', handleKeyUp)
+    }
 };
 
 // pad press function
@@ -177,6 +181,4 @@ const updateUI = ({ level, highScore }) => {
     document.getElementById("high-score").textContent = highScore;
 };
 
-window.onload = () => {
-    resetGame();
-};
+window.onload = () => { resetGame() };
