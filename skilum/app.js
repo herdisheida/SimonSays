@@ -17,8 +17,7 @@ let sequence;
 let userSequence = [];
 let level;
 
-let isKeyboardEnabled = false;
-let isBlocked = false; // blocks user presspad input (not keyboard input)
+let activityEnabled = false;
 
 let synth = new Tone.Synth().toDestination();
 
@@ -61,40 +60,35 @@ const startGame = async () => {
     document.getElementById("start-btn").disabled = true;
     await playSequence();
 };
-
 const disableActivity = () => {
     document.querySelectorAll(".pad, #replay-btn").forEach((button) => {
         button.disabled = true;
     });
     document.getElementById("sound-select").style.pointerEvents = "none";
-    isKeyboardEnabled = false;
+    activityEnabled = false;
 };
 const enableActivity = () => {
     document.querySelectorAll(".pad, #replay-btn").forEach((button) => {
         button.disabled = false;
     });
     document.getElementById("sound-select").style.pointerEvents = "auto";
-    isKeyboardEnabled = true;
+    activityEnabled = true;
 };
 
 // pad press function
 const pressPad = async (padId) => {
-    if (isBlocked) {
-        // return if sequence is playing
-        return;
-    }
     playSound(padId);
     userSequence.push(padId);
     
-    // disable replay-btn when user begins pressing pads for the first time in a level
+    // user can't replay sequence after beginning (pressingPads) the level
     if (userSequence.length > 0) {
         document.getElementById("replay-btn").disabled = true;
     }
     // validate userInput
     if (sequence.length === userSequence.length) {
-        isBlocked = true; // block user input whilst sequence is playing
-        await advanceLevel(userSequence);
-        isBlocked = false;
+        activityEnabled = false; // block user input whilst sequence is playing
+        advanceLevel(userSequence);
+        activityEnabled = true;
     }
 };
 
@@ -127,7 +121,7 @@ const advanceLevel = async (currentUserSequence) => {
         // set colors in array to padIds
         return "pad-" + color;
     });
-    await playSequence();
+    playSequence();
 };
 
 // check if userSequence is correct using backend by perfoming a PUT request
@@ -150,9 +144,9 @@ const validateUserSequence = async (userSequence) => {
 
 // play generated pad sequence
 const playSequence = async () => {
-    document.getElementById("replay-btn").disabled = true; // disable replay-btn right away (avoid spamming)
-    await new Promise((r) => setTimeout(r, 1600));
     disableActivity(); // user can't interact with UI whilst sequence is playing
+    await new Promise((r) => setTimeout(r, 1600));
+
     const padPromises = sequence.map(
         (padId, index) =>
             new Promise((resolve) => {
@@ -174,26 +168,39 @@ const playSequence = async () => {
     document.getElementById("start-btn").disabled = true;
 };
 
+
+const highlightPad = async (padId) => {
+    if (!activityEnabled) {
+        return;
+    }
+    document.getElementById(padId).classList.add("active");
+    pressPad(padId)
+    await new Promise((r) => setTimeout(r, 350)); // highlight duration
+    document.getElementById(padId).classList.remove("active");
+};
+
+
 // play tune when pressed and animate pad
 document.addEventListener("keyup", async (e) => {
-    if (!isKeyboardEnabled) {
+    if (!activityEnabled) {
         return;
     }
     let padId = keyToPad[e.key];
     if (padId) {
-        await pressPad(padId);
-        document.getElementById(padId).classList.remove("active");
+        pressPad(padId);
+        await document.getElementById(padId).classList.remove("active");
     }
 });
 // turns pad back to original look
 document.addEventListener("keydown", (e) => {
-    if (!isKeyboardEnabled) {
+    if (!activityEnabled) {
         return;
     }
     if (keyToPad[e.key]) {
         document.getElementById(keyToPad[e.key]).classList.add("active");
     }
 });
+
 
 // reset game when screen is loaded/reloaded
 window.onload = () => {
