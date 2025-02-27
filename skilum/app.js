@@ -33,10 +33,7 @@ const resetGame = async () => {
         // set the elements in the array to padIds
     sequence = gameState.sequence.map((color) => { return "pad-" + color; });
     userSequence = [];
-    
-    // display game info
-    document.getElementById("level-indicator").textContent = level;
-    document.getElementById("high-score").textContent = highScore;
+    updateUI({ level, highScore})
 };
 
 // get gameState from backend by perfoming a PUT request
@@ -109,14 +106,10 @@ const advanceLevel = async (currentUserSequence) => {
     highScore = Math.max(highScore, level - 1);
     userSequence = []; // reset for next lvl
     document.getElementById("replay-btn").disabled = true; // enable replay-btn for next lvl
-    // show updated info
-    document.getElementById("level-indicator").textContent = level;
-    document.getElementById("high-score").textContent = highScore;
-    
-    sequence = gameState.sequence.map((color) => {
-        // set colors in array to padIds
-        return "pad-" + color;
-    });
+    updateUI({ level, highScore})
+
+        // set elements in array to padIds
+    sequence = gameState.sequence.map((color) => { return "pad-" + color });
     playSequence();
 };
 
@@ -138,37 +131,36 @@ const validateUserSequence = async (userSequence) => {
     }
 };
 
-// play generated pad sequence
-const playSequence = async () => {
-    disableActivity(); // user can't interact with UI whilst sequence is playing
-    await new Promise((r) => setTimeout(r, 1600));
-
-    const padPromises = sequence.map(
-        (padId, index) =>
-            new Promise((resolve) => {
-            setTimeout(async () => {
-                // highlight pad
+const playSequence = () => {
+    disableActivity();
+    setTimeout(() => {
+        // track when sequence finishes playing
+        let totalDelay = 0;
+        sequence.forEach((padId, index) => {
+            const padDelay = index * 900; // delay for each pad
+            setTimeout(() => {
                 const pad = document.getElementById(padId);
+                // highlight pad
                 pad.classList.add("active");
                 playSound(padId);
-                await new Promise((r) => setTimeout(r, 350)); // highlight duration
-                pad.classList.remove("active");
-                resolve(); // mark the highlight as finished
-            }, index * 900); // 900ms interval between each pad highlight
-        })
-    );
-    // wait for sequence to complete
-    await Promise.all(padPromises);
-    // reset for next lvl
-    enableActivity();
-    document.getElementById("start-btn").disabled = true;
+                // remove highlight after 350ms
+                setTimeout(() => { pad.classList.remove("active"); }, 350);
+            }, padDelay);
+            // update total delay tracking
+            totalDelay = padDelay + 350;
+        });
+        
+        // enable UI after sequence finishes playing
+        setTimeout(() => {
+            enableActivity();
+            document.getElementById("start-btn").disabled = true;
+        }, totalDelay + 100);
+    }, 1600); // initial 1600ms delay
 };
 
 
 const highlightPad = async (padId) => {
-    if (!activityEnabled) {
-        return;
-    }
+    if (!activityEnabled) { return; }
     document.getElementById(padId).classList.add("active");
     pressPad(padId)
     await new Promise((r) => setTimeout(r, 350)); // highlight duration
@@ -196,12 +188,13 @@ document.addEventListener("keyup", handleKeyUp)
 document.addEventListener("keydown", handleKeyDown)
 
 
-
 // helper functions
+const delay = (ms) => new Promise(resolve => setTimeout(resolve, ms));
 const updateUI = ({ level, highScore }) => {
     document.getElementById("level-indicator").textContent = level;
     document.getElementById("high-score").textContent = highScore;
 };
+
 
 window.onload = () => {
     resetGame();
