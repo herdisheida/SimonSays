@@ -87,12 +87,8 @@ const pressPad = async (padId) => {
 
 // plays sound for each pad press (as well when the sequence is playing)
 const playSound = (padId) => {
-    // get sound type
-    const soundSelector = document.getElementById("sound-select");
-    synth.oscillator.type = soundSelector.value;
-    // get tone for corrasponding pad
-    let note = noteForPads[padId];
-    synth.triggerAttackRelease(note, "8n", Tone.now());
+    synth.oscillator.type = document.getElementById("sound-select").value;
+    synth.triggerAttackRelease(noteForPads[padId], "8n", Tone.now());
 };
 
 // check if userSequence is valid (the same as the computer generated sequence)
@@ -118,11 +114,9 @@ const validateUserSequence = async (userSequence) => {
         const response = await axios.post(url, { sequence: userSequence });
         return response.data.gameState;
     } catch (error) {
-        if (error.response.status === 400) {
-            // if user inputs wrong sequence
+        if (error.response.status === 400) { // user sequence is wrong
             document.getElementById("failure-modal").style.display = "flex";
-        } else {
-            // request error
+        } else { // post error
             console.log("Error validating user input", error);
         }
     }
