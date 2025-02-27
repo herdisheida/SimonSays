@@ -53,20 +53,15 @@ const startGame = async () => {
     document.getElementById("start-btn").disabled = true;
     await playSequence();
 };
-const disableActivity = () => {
-    document.querySelectorAll(".pad, #replay-btn").forEach((button) => {
-        button.disabled = true;
-    });
-    document.getElementById("sound-select").style.pointerEvents = "none";
-    activityEnabled = false;
+
+const disableActivity = () => { toggleActivity(false) };
+const enableActivity = () => { toggleActivity(true) };
+const toggleActivity = (enabled) => {
+    document.querySelectorAll(".pad, #replay-btn").forEach((button) => { button.disabled = !enabled });
+    document.getElementById("sound-select").style.pointerEvents = enabled ? "auto" : "none";
+    activityEnabled = enabled;
 };
-const enableActivity = () => {
-    document.querySelectorAll(".pad, #replay-btn").forEach((button) => {
-        button.disabled = false;
-    });
-    document.getElementById("sound-select").style.pointerEvents = "auto";
-    activityEnabled = true;
-};
+
 
 // pad press function
 const pressPad = async (padId) => {
