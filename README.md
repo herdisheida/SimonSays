@@ -4,7 +4,7 @@
 ![Uses Tone.js](https://img.shields.io/badge/Uses-Tone.js-blue)
 ![Axios HTTP](https://img.shields.io/badge/HTTP_AJAX-Axios-green)
 
-A web implementation of the classic Simon memory game, developed for T-213-VEFF Web Programming I at Reykjavik University.
+A web implementation of the classic Simon memory game, developed for Web Programming I (T-213-VEFF) at Reykjavik University.
 
 
 
