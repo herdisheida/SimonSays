@@ -83,12 +83,12 @@ const playSound = (padId) => {
 
 // check if userSequence is valid (the same as the computer generated sequence)
 const advanceLevel = async (currentUserSequence) => {
-    userInput = currentUserSequence.map((padId) => padId.replace(/pad-/, "")); // turn padId into colors
+    const userInput = currentUserSequence.map((padId) => padId.replace(/pad-/, "")); // turn padId into colors
     const gameState = await validateUserSequence(userInput);
     if (!gameState) { return; }
     
     level = gameState.level;
-    highScore = gameState.highScore;
+    let highScore = gameState.highScore;
     highScore = Math.max(highScore, level - 1);
     userSequence = []; // reset for next lvl
     sequence = gameState.sequence.map((color) => { return "pad-" + color });
