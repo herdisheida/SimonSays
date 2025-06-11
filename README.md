@@ -1,6 +1,10 @@
 # Simon Says Game 🎮
 
-![Made with JavaScript](https://img.shields.io/badge/Made_with-JavaScript-yellow)
+
+![HTML5](https://img.shields.io/badge/HTML5-E34F26?logo=html5&logoColor=white)
+![CSS3](https://img.shields.io/badge/CSS3-1572B6?logo=css3&logoColor=white)
+![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?logo=javascript&logoColor=black)
+
 ![Uses Tone.js](https://img.shields.io/badge/Uses-Tone.js-blue)
 ![Axios HTTP](https://img.shields.io/badge/HTTP_AJAX-Axios-green)
 
