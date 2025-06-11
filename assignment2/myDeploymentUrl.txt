@@ -1,3 +1,3 @@
-Replace the url below with the url we can use to access your website:
+Url to access the website:
 
 https://thriving-croissant-edc9d1.netlify.app/
