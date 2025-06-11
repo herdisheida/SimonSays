@@ -6,8 +6,9 @@
 
 A web implementation of the classic Simon memory game, developed for T-213-VEFF Web Programming I at Reykjavik University.
 
-## 🎯 Features
 
+
+## 🎯 Features
 - **Interactive gameplay** with both mouse and keyboard (Q,W,A,S) support
 - **Dynamic sequence generation** from backend API
 - **Audio feedback** using Tone.js with different tone styles
@@ -15,22 +16,43 @@ A web implementation of the classic Simon memory game, developed for T-213-VEFF 
 - **Replay functionality** to review sequences
 - **Responsive design** that works on modern browsers
 
-## 🛠️ Technical Requirements
 
-- Single HTML file (`index.html`) with no page reloads
-- Separate CSS (`style.css`) and JavaScript (`app.js`) files
-- Valid HTML5 (W3C compliant)
-- Uses only approved libraries:
-  - Axios for HTTP requests
-  - Tone.js for audio playback
-- Modern JavaScript practices:
-  - `const`/`let` instead of `var`
-  - Arrow functions
-  - Async/await syntax
-  - Array methods (forEach, map, etc.)
 
 ## 🚀 Installation & Setup
+1. Clone the repository:
+```bash
+git clone https://github.com/herdisheida/P6-Wordle
+```
+2. Go to the projects directory
+```bash
+cd <your-simaon-says-folder>
+```
+3. Start the backend server (required for game logic):
+```bash
+cd assignment2_backend
+npm install
+npm start
+```
+3. Open the game in your browser by launching index.html or by using the link from [myDeploymentUrl.txt](myDeploymentUrl.txt) file
 
-1. **Clone the repository** (if applicable)
-   ```bash
-   git clone [repository-url]
+
+
+
+
+## 🎮 How to Play
+
+1. Select your preferred tone style from the dropdown
+
+2. Click "Start" to begin the game
+
+3. Watch and listen to the sequence of tones
+
+4. Repeat the sequence by clicking the colored pads or using keys:
+* 🔴 Red (Q)
+* 🟡 Yellow (W)
+* 🟢 Green (A)
+* 🔵 Blue (S)
+
+5. Progress through levels by correctly repeating longer sequences
+
+6. Use "Replay" to hear the current sequence again
