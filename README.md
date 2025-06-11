@@ -33,7 +33,7 @@ cd assignment2_backend
 npm install
 npm start
 ```
-3. Open the game in your browser by launching index.html or by using the link from [myDeploymentUrl.txt](myDeploymentUrl.txt) file
+3. Open the game in your browser by launching index.html or by using the link from [myDeploymentUrl.txt](/assignment2/myDeploymentUrl.txt) file
 
 
 
