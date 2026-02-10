@@ -9,9 +9,8 @@
 
 A web implementation of the classic Simon memory game, developed for Web Programming I (T-213-VEFF) at Reykjavik University.
 
-
-
 ## 🎯 Features
+
 - **Interactive gameplay** with both mouse and keyboard (Q,W,A,S) support
 - **Dynamic sequence generation** from backend API
 - **Audio feedback** using Tone.js with different tone styles
@@ -19,28 +18,29 @@ A web implementation of the classic Simon memory game, developed for Web Program
 - **Replay functionality** to review sequences
 - **Responsive design** that works on modern browsers
 
-
-
 ## 🚀 Installation & Setup
+
 1. Clone the repository:
+
 ```bash
 git clone https://github.com/herdisheida/P6-Wordle
 ```
+
 2. Go to the projects directory
+
 ```bash
 cd <your-simaon-says-folder>
 ```
+
 3. Start the backend server (required for game logic):
+
 ```bash
 cd assignment2_backend
 npm install
 npm start
 ```
+
 3. Open the game in your browser by launching index.html or by using the link from [myDeploymentUrl.txt](/assignment2/myDeploymentUrl.txt) file
-
-
-
-
 
 ## 🎮 How to Play
 
@@ -51,10 +51,11 @@ npm start
 3. Watch and listen to the sequence of tones
 
 4. Repeat the sequence by clicking the colored pads or using keys:
-* 🔴 Red (Q)
-* 🟡 Yellow (W)
-* 🟢 Green (A)
-* 🔵 Blue (S)
+
+- 🔴 Red (Q)
+- 🟡 Yellow (W)
+- 🟢 Green (A)
+- 🔵 Blue (S)
 
 5. Progress through levels by correctly repeating longer sequences
 
